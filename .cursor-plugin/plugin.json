@@ -1,0 +1,21 @@
+{
+  "name": "superui",
+  "displayName": "SuperUI",
+  "description": "Frontend UI design, planning, TDD implementation, and review skills for agentic coding environments.",
+  "version": "0.1.0",
+  "author": {
+    "name": "AntonioMuk"
+  },
+  "homepage": "https://github.com/AntonioMuk/superui",
+  "repository": "https://github.com/AntonioMuk/superui",
+  "license": "MIT",
+  "keywords": [
+    "frontend",
+    "ui",
+    "skills",
+    "DESIGN.md",
+    "responsive",
+    "accessibility"
+  ],
+  "skills": "./skills/"
+}

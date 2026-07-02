@@ -1,0 +1,14 @@
+---
+description: Use SuperUI for frontend UI design, redesign, DESIGN.md, planning, implementation, responsive QA, accessibility, and review.
+alwaysApply: false
+---
+
+# SuperUI
+
+When a task involves frontend UI work, read and follow:
+
+```text
+skills/superui/SKILL.md
+```
+
+Start from the `superui` router instead of directly editing UI code. Determine `<ARTIFACT_ROOT>`, read user preferences, then route to the relevant child skill.

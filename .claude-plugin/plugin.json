@@ -1,0 +1,21 @@
+{
+  "name": "superui",
+  "description": "Agent-agnostic frontend UI workflow skills for Claude and other coding agents.",
+  "version": "0.1.0",
+  "author": {
+    "name": "AntonioMuk",
+    "url": "https://github.com/AntonioMuk"
+  },
+  "homepage": "https://github.com/AntonioMuk/superui",
+  "repository": "https://github.com/AntonioMuk/superui",
+  "license": "MIT",
+  "keywords": [
+    "frontend",
+    "ui",
+    "skills",
+    "design-system",
+    "planning",
+    "tdd",
+    "review"
+  ]
+}

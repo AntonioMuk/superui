@@ -1,0 +1,27 @@
+{
+  "name": "superui",
+  "version": "0.1.0",
+  "description": "Agent-agnostic frontend UI workflow skills for coding agents",
+  "type": "module",
+  "keywords": [
+    "skills",
+    "frontend",
+    "ui",
+    "design-system",
+    "DESIGN.md",
+    "responsive",
+    "accessibility",
+    "tdd",
+    "review"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AntonioMuk/superui.git"
+  },
+  "license": "MIT",
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  }
+}

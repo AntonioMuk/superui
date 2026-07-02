@@ -30,6 +30,28 @@ skills/
   superui-shared/             # 共享规则：响应式约束、审核标准、产物策略、偏好模板
 ```
 
+## 多 Agent 生态兼容
+
+SuperUI 参考 Superpowers 的多生态组织方式：核心能力放在统一的 `skills/` 目录，平台适配层只负责发现、安装和工具映射。
+
+当前仓库包含这些入口：
+
+- `AGENTS.md`：通用 agent / OpenAI Agents / Codex 风格入口。
+- `CLAUDE.md` 与 `.claude-plugin/plugin.json`：Claude / Claude Code 入口。
+- `.codex-plugin/plugin.json`：Codex App / Codex CLI 插件元数据。
+- `.cursor-plugin/plugin.json` 与 `.cursor/rules/superui.mdc`：Cursor 入口。
+- `GEMINI.md` 与 `gemini-extension.json`：Gemini 入口。
+- `.kimi-plugin/plugin.json`：Kimi Code 插件元数据和工具映射。
+- `.opencode/INSTALL.md`：OpenCode 安装说明。
+- `.windsurf/rules/superui.md`：Windsurf 规则入口。
+- `package.json`：为 git-backed package / Pi-style skill 加载保留元数据。
+
+详细说明见：
+
+```text
+docs/AGENT_ECOSYSTEMS.md
+```
+
 ## 能达到什么效果
 
 使用 SuperUI 后，前端产物会更接近“可持续协作”的状态：
