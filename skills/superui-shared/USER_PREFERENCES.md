@@ -1,6 +1,6 @@
 # SuperUI User Preferences
 
-This file is the local fallback for long-lived SuperUI preferences.
+This file is a read-only template for long-lived SuperUI preferences.
 
 Preferred user-level location:
 
@@ -15,7 +15,13 @@ Platform-specific alternatives:
 ~/.claude/superui/USER_PREFERENCES.md
 ```
 
-Use this file only when user-level locations are unavailable or not writable.
+Do not write personal preferences back into this repository file. If user-level
+locations are unavailable or not writable, write project-local private
+preferences to:
+
+```text
+<target_project>/.superui/preferences.local.md
+```
 
 ## Recording Rules
 

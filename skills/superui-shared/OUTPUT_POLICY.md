@@ -25,7 +25,13 @@ Platform-specific paths are also acceptable when the runtime has a convention:
 ~/.claude/superui/USER_PREFERENCES.md
 ```
 
-Fallback path:
+Project-local private fallback when user-level memory is not writable:
+
+```text
+<target_project>/.superui/preferences.local.md
+```
+
+Read-only template fallback:
 
 ```text
 skills/superui-shared/USER_PREFERENCES.md
@@ -35,5 +41,7 @@ skills/superui-shared/USER_PREFERENCES.md
 
 - Report `<ARTIFACT_ROOT>` at the start of each major stage.
 - Do not scatter artifacts across project, workspace, and system paths in one run.
-- Do not write long-lived preferences into project artifacts.
+- Do not write long-lived preferences into `<ARTIFACT_ROOT>` task artifacts.
+- When user-level memory is unavailable, the only project-local preference target is `.superui/preferences.local.md`.
+- Do not write user preferences into `skills/superui-shared/USER_PREFERENCES.md`; it is a template only.
 - If the user overrides the path, use the override for that run and record it in `pipeline-status.md`.

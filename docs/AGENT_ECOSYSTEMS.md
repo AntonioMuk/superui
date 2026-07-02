@@ -14,7 +14,7 @@ SuperUI 的核心原则是：**核心能力只维护一份 `skills/`，不同 ag
 | Cursor | `.cursor-plugin/plugin.json`、`.cursor/rules/superui.mdc` | Cursor 插件元数据和项目规则 |
 | Gemini | `GEMINI.md`、`gemini-extension.json` | Gemini 上下文入口和扩展元数据 |
 | Kimi Code | `.kimi-plugin/plugin.json` | Kimi 插件元数据和工具映射提示 |
-| OpenCode | `.opencode/INSTALL.md` | OpenCode 安装说明 |
+| OpenCode | `.opencode/INSTALL.md`、`.opencode/plugins/superui.js` | OpenCode 安装说明、技能路径注册和 bootstrap 注入 |
 | Windsurf | `.windsurf/rules/superui.md` | Windsurf 项目规则 |
 
 ## 适配层职责
@@ -53,7 +53,13 @@ SuperUI skill 正文会尽量使用平台中立动作：
 ~/.claude/superui/USER_PREFERENCES.md
 ```
 
-如果用户级目录不可用，回退到：
+如果用户级目录不可写，不要写回仓库模板。应写入项目本地私有偏好：
+
+```text
+<target_project>/.superui/preferences.local.md
+```
+
+仓库内偏好文件仅作为只读模板：
 
 ```text
 skills/superui-shared/USER_PREFERENCES.md
@@ -73,3 +79,9 @@ Use SuperUI to create a DESIGN.md for a compact admin dashboard.
 ```
 
 通过标准：agent 应该先加载 `superui` 总控，确定 `<ARTIFACT_ROOT>`，读取偏好，再路由到 `superui-design-md`，而不是直接写页面代码。
+
+当前兼容性状态见：
+
+```text
+docs/COMPATIBILITY_MATRIX.md
+```

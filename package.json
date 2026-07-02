@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "Agent-agnostic frontend UI workflow skills for coding agents",
   "type": "module",
+  "main": ".opencode/plugins/superui.js",
   "keywords": [
+    "pi-package",
     "skills",
     "frontend",
     "ui",

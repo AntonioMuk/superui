@@ -10,6 +10,10 @@ Add SuperUI to the `plugin` array in your `opencode.json`:
 
 Restart OpenCode after editing the config.
 
+This package exposes `.opencode/plugins/superui.js` through `package.json#main`.
+The plugin registers `./skills` with OpenCode and injects the `superui`
+bootstrap into the first user message of a session.
+
 ## Usage
 
 Use OpenCode's native skill support to load `superui`, then let it route to child skills:
@@ -19,6 +23,20 @@ Use SuperUI to create a DESIGN.md for a compact admin dashboard.
 ```
 
 If OpenCode cannot resolve the package name, install from the repository URL directly according to your OpenCode version's plugin syntax.
+
+Windows fallback:
+
+```powershell
+npm install superui@git+https://github.com/AntonioMuk/superui.git --prefix "$HOME\.config\opencode"
+```
+
+Then point OpenCode at the installed package path:
+
+```json
+{
+  "plugin": ["~/.config/opencode/node_modules/superui"]
+}
+```
 
 ## Tool Mapping
 
