@@ -10,7 +10,7 @@ description: "Use when creating or updating a DESIGN.md design system, design to
 ## 核心规则
 
 - **格式严格遵循 Google Stitch DESIGN.md 规范**：双层结构——YAML 前言层（机器可读 token）+ Markdown 正文层（人类可读设计理由）。
-- **案例驱动**：生成前先浏览 `examples/design-md/`（本 skill 内置案例库，74 个品牌 DESIGN.md）中与目标风格相近的案例作为参照。
+- **案例按需**：只有当用户描述、行业、品牌或风格需要校准时，才从 `examples/design-md/` 选择少量案例；不得整库加载。
 - **设计情报先行**：生成 token 前读取 `skills/superui-shared/DESIGN_INTELLIGENCE.md`，先判定产品类型、受众、密度、信任等级、平台和反模式。
 - **交互闭环扩展**：Google 原版缺少交互描述，此 skill 强制增加「Interaction Loop」段，覆盖 CRUD 闭环、反馈机制、操作依赖。
 - **产物写入** `<ARTIFACT_ROOT>/`：`DESIGN.md`、`preview.html`、`preview-dark.html`。
@@ -22,7 +22,7 @@ description: "Use when creating or updating a DESIGN.md design system, design to
 ```
 Step 1  输入源加载 → 是分析报告还是用户描述？
 Step 2  设计情报 → 产品/受众/密度/信任/反模式
-Step 3  案例参照 → 从 74 个品牌案例中找风格参考
+Step 3  案例参照 → 按需选择 1-2 个风格参考
 Step 4  生成 DESIGN.md → 按模板填充
 Step 5  生成预览 HTML → 双色预览
 Step 6  Lint 校验 → @google/design.md CLI
@@ -77,13 +77,14 @@ Step 6  Lint 校验 → @google/design.md CLI
 
 ---
 
-## Step 3：案例参照
+## Step 3：案例参照（按需）
 
-从案例库中找风格参照：
+案例库用于风格校准，不是必读上下文。
 
-1. 根据分析报告、用户描述和偏好记忆中的风格特征，用目录列表或 `rg --files examples/design-md` 列出案例库目录
-2. 选 2-3 个最接近的案例，读取 `examples/design-md/<案例名>/DESIGN.md`，学习其 YAML token 结构和 Markdown 描述风格
-3. 参照案例但不照抄——提取的是格式结构，不是数值
+1. 先用目录名、案例库 README 或 `rg --files examples/design-md` 找候选，不读取整库。
+2. 最多选 1-2 个最接近的案例；只读取与当前决策相关的章节，如 Overview、Colors、Typography、Layout、Components、Responsive。
+3. 用户没有明确品牌、行业、风格要求，或 `DESIGN_INTELLIGENCE.md` 已足够支撑判断时，跳过案例并记录 `case reference skipped`。
+4. 参照案例但不照抄：提取结构和表达方式，不复制数值、文案或品牌资产。
 
 案例风格速查（部分）：
 

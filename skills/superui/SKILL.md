@@ -5,194 +5,93 @@ description: "Use when the user asks to create, redesign, analyze, plan, impleme
 
 # SuperUI 总控
 
-SuperUI 是前端 UI 工作的入口调度器。先判断用户意图、产物位置、偏好上下文和当前阶段，再加载对应子 skill 执行具体工作。
+SuperUI 是前端 UI 工作的入口调度器。总控只负责定路径、读偏好、判阶段、调子 skill、检查产物；具体分析、生成、规划、实现和审核都交给子 skill。
 
-## 核心规则
+## 启动顺序
 
-- **先定产物根目录**：所有子 skill 统一使用 `<ARTIFACT_ROOT>`，不得各自发明输出路径。
-- **先读用户偏好**：开始前读取用户级偏好；没有权限或文件不存在时读取本 skill 的共享偏好模板作为只读默认值。
-- **只调度，不混做**：总控负责路由和阶段检查；具体分析、生成、规划、实现、审核由子 skill 执行。
-- **状态可恢复**：通过检查 `<ARTIFACT_ROOT>/` 下的产物文件判断当前阶段，支持中断后恢复。
-- **用户可跳转**：用户可以说"我只要生成 DESIGN.md"或"直接做审核"，总控支持跳过前置阶段直接路由到目标子 skill。
-- **偏好持续进化**：用户明确表达稳定 UI 偏好或否定某种做法时，更新偏好记录；一次性项目需求不写入长期偏好。
-- **设计情报、交付清单与工程门禁贯穿全链路**：设计阶段使用 `DESIGN_INTELLIGENCE.md`，并在需要时明确检查本地 `ui-ux-pro-max-skill` 是否可用、尝试引用其调用结果；不可用时建议用户可选安装但继续走 SuperUI 内置流程；规划和审核阶段使用 `DESIGN_HANDOFF_CHECKLIST.md` 与 `ENGINEERING_GATES.md`。
+1. 读取 `skills/superui-shared/OUTPUT_POLICY.md`，确定统一 `<ARTIFACT_ROOT>`。
+2. 读取用户级偏好；不可用时仅读取 `skills/superui-shared/USER_PREFERENCES.md` 作为模板默认值。
+3. 检查 `<ARTIFACT_ROOT>/` 已有产物，判断从哪个阶段恢复。
+4. 按用户意图路由到最小必要子 skill。
+5. 子 skill 完成后检查关键产物，并更新 `<ARTIFACT_ROOT>/pipeline-status.md`。
 
-## 触发词速查
+## 按需共享文件
 
-| 用户说法 | 路由 |
-|---------|------|
-| build/create/make a page, web app, dashboard, landing page | `superui-design-md` → `superui-planner` → `superui-tdd` |
-| redesign/refactor/improve this UI, 对齐设计, 改造页面 | `superui-source-analyzer` → `superui-design-md` → `superui-planner` |
-| analyze/extract design system, 分析前端项目, 提取设计规范 | `superui-source-analyzer` |
-| generate/write DESIGN.md, 设计规范, design tokens | `superui-design-md` |
-| plan/spec/test plan, 方案, 规格, 测试计划 | `superui-planner` |
-| implement with TDD, 写前端代码, 落地实现 | `superui-tdd` |
-| review/audit/QA, 审核, 检查响应式, 视觉走查 | `superui-review` |
+不要预加载整个 `skills/superui-shared/`。按阶段读取：
 
-## 产物根目录策略
+| 文件 | 何时读取 |
+|------|----------|
+| `OUTPUT_POLICY.md` | 每次 SuperUI 任务开始 |
+| `USER_PREFERENCES.md` | 用户级偏好不可用时 |
+| `DESIGN_INTELLIGENCE.md` | 生成 DESIGN.md，或审核风格/行业/信任等级问题 |
+| `DESIGN_HANDOFF_CHECKLIST.md` | 规划、Plan Gate、交付完整性争议 |
+| `ENGINEERING_GATES.md` | 规划、审核、TDD 交接 |
+| `RESPONSIVE_RULES.md` | 实现或 Code Gate 响应式检查 |
+| `rubric-locked.md` | 审核阶段 |
 
-详细规则见 `skills/superui-shared/OUTPUT_POLICY.md`。总控必须先应用这份策略，再调度任何子 skill。
+`DESIGN_HANDOFF_CHECKLIST.md` 和 `ENGINEERING_GATES.md` 只做完整性/风险检查，不产生 DESIGN.md 之外的新设计参数。发现设计缺口时，回到 `superui-design-md` 更新 DESIGN.md，或列为待确认。
 
-按顺序选择 `<ARTIFACT_ROOT>`：
+## 路由
 
-1. **用户显式指定**：使用用户给出的目录，如 `docs/design/`、`.superui/`、临时目录。
-2. **项目工作目录**：如果存在明确目标项目根目录，默认使用 `<target_project>/.superui/<project>/`。
-3. **当前 workspace**：如果没有明确目标项目，使用 `<current_workspace>/outputs/<project>/`。
-4. **用户级长期偏好**：用户偏好不写入项目产物目录，优先使用 `~/.superui/USER_PREFERENCES.md`；也可按平台使用 `~/.codex/superui/USER_PREFERENCES.md`、`~/.claude/superui/USER_PREFERENCES.md` 等；用户级位置不可写时，写入 `<target_project>/.superui/preferences.local.md` 作为本地私有偏好，不得写回仓库内模板。
+| 用户意图 | 路由 |
+|----------|------|
+| 分析现有前端项目、提取设计系统 | `superui-source-analyzer` |
+| 生成或更新 DESIGN.md / design tokens / 设计规范 | `superui-design-md` |
+| 输出方案、规格、测试计划 | `superui-planner` |
+| 实现前端、按方案落地、TDD | `superui-tdd` |
+| 审核、QA、Plan Gate、Code Gate | `superui-review` |
+| 新建完整 UI 项目 | `superui-design-md` -> `superui-planner` -> `superui-review`(Plan Gate) -> `superui-tdd` -> `superui-review`(Code Gate) |
+| 改造存量 UI 项目 | `superui-source-analyzer` -> `superui-design-md` -> `superui-planner` -> `superui-review`(Plan Gate) -> `superui-tdd` -> `superui-review`(Code Gate) |
 
-首次无法判断时只问一个问题确认产物位置。之后在每个阶段开头报告当前 `<ARTIFACT_ROOT>`。
+用户明确要求跳过阶段时，按目标阶段执行；缺失的前置产物只在确实阻塞时再补。
 
-## 用户偏好记忆
+## 阶段恢复
 
-开始任何 SuperUI 任务前：
+用文件存在性判断进度：
 
-1. 尝试读取 `~/.superui/USER_PREFERENCES.md`。
-2. 如果当前 agent 平台有约定的用户级目录，可读取对应平台路径，例如 `~/.codex/superui/USER_PREFERENCES.md` 或 `~/.claude/superui/USER_PREFERENCES.md`。
-3. 如果用户级文件不可用，读取 `skills/superui-shared/USER_PREFERENCES.md` 作为只读模板。
-4. 将稳定偏好作为软约束；与当前用户需求冲突时，以当前请求为准并记录冲突原因。
+| 产物 | 阶段 |
+|------|------|
+| `analysis/layout.md`、`analysis/interaction.md`、`analysis/style.md` | 源码分析完成 |
+| `DESIGN.md`、`preview.html`、`preview-dark.html` | 设计规范完成 |
+| `determination-report.md`、`proposal.md` 或 `design-proposal.md`、`test-plan.md` | 规划完成 |
+| `design-adjustments.md` 或代码 diff | 实现完成 |
+| `review/improvement-plan.md` | 审核完成或待返工 |
 
-更新规则：
+检测到已有产物时，简短说明“检测到 XX，继续 YY 阶段”。
 
-- 只记录用户明确表达的长期偏好，例如"我不喜欢大圆角"、"以后都优先 Element Plus"、"偏好密集型后台界面"。
-- 不记录一次性需求，例如"这个页面用红色"、"这次先不要暗色模式"。
-- 每条偏好记录包含日期、来源原话、适用范围、置信度。
-- 只有在可以写入用户级偏好文件或项目本地私有偏好文件时才更新；不得把长期偏好写入 `skills/superui-shared/USER_PREFERENCES.md`。
+## 偏好记忆
 
-## 全链路拓扑
+- 只记录用户明确表达的长期 UI 偏好，例如“以后都优先 Element Plus”“我不喜欢大圆角”。
+- 不记录一次性需求，例如“这次用红色”“这个页面先不要暗色模式”。
+- 优先写入 `~/.superui/USER_PREFERENCES.md`；平台目录可用时也可用 `~/.codex/superui/USER_PREFERENCES.md`、`~/.claude/superui/USER_PREFERENCES.md`。
+- 用户级位置不可写时，写入 `<target_project>/.superui/preferences.local.md`；不得写回仓库内共享模板。
 
-```
-① superui-source-analyzer → analysis/layout.md, interaction.md, style.md
-         │
-         ▼
-② superui-design-md        → DESIGN.md, preview.html, preview-dark.html
-                              + Design Intelligence + Design Handoff
-         │
-         ▼
-③ superui-planner          → determination-report.md, proposal.md / design-proposal.md,
-         │                     specs/*.md, test-plan.md + Engineering Gates
-         ▼
-④ superui-tdd              → 代码 + 测试 + design-adjustments.md
-         │
-         ▼
-⑤ superui-review @ Plan Gate   → review/*.md + improvement-plan.md
-         │
-         ▼
-④ superui-tdd              → 代码 + 测试 + design-adjustments.md
-         │
-         ▼
-⑤ superui-review @ Code Gate   → review/*.md + improvement-plan.md
-```
+## 产物根目录
 
-## 常用快捷路径
+路径策略以 `OUTPUT_POLICY.md` 为准。一般顺序：
 
-| 用户意图 | 路由 | 说明 |
-|---------|------|------|
-| "分析这个前端项目" | ① | 只分析，不往后走 |
-| "分析项目并生成 DESIGN.md" | ①→② | 标准分析+设计提取 |
-| "基于这个描述生成 DESIGN.md" | ② | 跳过分析，直接用描述生成 |
-| "给这个项目做改造" | ①→②→③→⑤(Plan)→④→⑤(Code) | 全链路改造 |
-| "新建一个项目，给设计规范" | ②→③→⑤(Plan)→④→⑤(Code) | 全新项目全链路 |
-| "只做审核" | ⑤ | 跳过前面，直接审核已有产物 |
-| "从方案阶段开始" | ③→⑤→④→⑤ | 假设 DESIGN.md 已存在 |
-| "从实现阶段开始" | ④→⑤ | 假设方案已存在 |
+1. 用户显式指定的目录。
+2. 目标项目存在时：`<target_project>/.superui/<project>/`。
+3. 无目标项目时：`<current_workspace>/outputs/<project>/`。
 
-## 工作流程
+每个阶段开头报告当前 `<ARTIFACT_ROOT>`。
 
-### Step 1：上下文解析
+## Gate
 
-收到用户请求后，判断：
+- **Plan Gate**：`proposal.md` 或 `design-proposal.md` 产出后，触发 `superui-review`。
+- **Code Gate**：代码和测试产出后，触发 `superui-review`。
 
-1. **目标项目名**：从用户描述中提取或询问，用于确定 `<ARTIFACT_ROOT>`。
-2. **目标项目根目录**：如果用户在现有项目中工作，优先定位项目根目录。
-3. **产物根目录**：按"产物根目录策略"确定并报告。
-4. **用户偏好**：读取长期偏好并识别本次请求中的临时偏好。
-5. **目标操作**：用户想做什么？
-   - "分析" → sub-skill ①
-   - "生成设计/生成 DESIGN.md" → sub-skill ②
-   - "出方案/规划" → sub-skill ③
-   - "实现/写代码" → sub-skill ④
-   - "审核/检查" → sub-skill ⑤
-   - "全链路" → 按拓扑顺序调度
-6. **起始阶段**：检查 `<ARTIFACT_ROOT>/` 下已有产物，判断从哪个阶段开始。
-
-### Step 2：阶段检测
-
-扫描 `<ARTIFACT_ROOT>/` 目录：
-
-```bash
-ls <ARTIFACT_ROOT>/analysis/layout.md
-ls <ARTIFACT_ROOT>/DESIGN.md
-ls <ARTIFACT_ROOT>/determination-report.md
-ls <ARTIFACT_ROOT>/test-plan.md
-ls <ARTIFACT_ROOT>/design-adjustments.md
-ls <ARTIFACT_ROOT>/review/improvement-plan.md
-```
-
-检测结果决定当前阶段。存在关键产物时，简短告知："检测到已有 XX 产物，从 YY 阶段继续。"
-
-### Step 3：路由调度
-
-按用户意图加载对应子 skill。每次加载前传递：`project`、`target_project`、`ARTIFACT_ROOT`、`source_dir`（如有）、长期偏好摘要、本次临时偏好。
-
-```
-superui-source-analyzer   # ①
-superui-design-md         # ②
-superui-planner           # ③
-superui-tdd               # ④
-superui-review            # ⑤
-```
-
-子 skill 执行完毕后回到总控。总控检查产物文件是否已生成，判断是否成功。
-
-### Step 4：Gate 判断
-
-在关键节点做 Gate 判断：
-
-- **Plan Gate**：proposal.md 或 design-proposal.md 产出后 → 触发 `superui-review` @ Plan Gate。
-- **Code Gate**：代码和测试产出后 → 触发 `superui-review` @ Code Gate。
-
-Gate 未通过时，根据 improvement-plan.md 决定：回退到 ④ 修改、回退到 ③ 重新规划，或暂停等待人类决策。
-
-### Step 5：流转与交接
-
-每个阶段完成后：
-
-1. 确认产物文件已生成。
-2. 汇报当前阶段完成情况和产物路径。
-3. 用户要求"全部自动走"时继续推进；否则在高风险阶段前短暂停顿确认。
-4. 如发现可沉淀偏好，按"用户偏好记忆"更新。
-
-## 状态追踪
-
-复杂链路维护：
-
-```
-<ARTIFACT_ROOT>/pipeline-status.md
-```
-
-```markdown
-# 管线状态
-
-- 阶段 ① 源码分析: 完成
-- 阶段 ② DESIGN.md: 完成
-- 阶段 ③ 方案规划: 进行中（改造路径）
-- 阶段 ⑤ Plan Gate: 待执行
-- 阶段 ④ TDD 实现: 待执行
-- 阶段 ⑤ Code Gate: 待执行
-```
+Gate 未通过时，根据 `review/improvement-plan.md` 回到规划或实现阶段；核心冲突写入 `review/review-conflicts.json` 并等待人类决策。
 
 ## 异常处理
 
-| 异常情况 | 处理方式 |
-|---------|---------|
-| 子 skill 执行失败 | 报告失败原因，给出重试、降级或暂停选项 |
-| 前置产物缺失 | 说明缺少哪个产物，并路由到生成该产物的子 skill |
-| 用户中途改变方向 | 更新意图，重新规划路由和 `<ARTIFACT_ROOT>` |
-| 审核发现阻塞问题 | 暂停流程，输出 `review-conflicts.json` 等待人类决策 |
-| 用户级偏好不可写 | 写入 `<target_project>/.superui/preferences.local.md`；仓库模板只读 |
+| 情况 | 处理 |
+|------|------|
+| 子 skill 失败 | 报告原因，给出重试、降级或暂停选项 |
+| 前置产物缺失 | 路由到生成该产物的子 skill |
+| 用户改变方向 | 重新确定意图、`<ARTIFACT_ROOT>` 和路由 |
+| 用户级偏好不可写 | 写入项目本地私有偏好文件 |
 
-## 工具依赖
+## 工具
 
-- 使用当前运行环境提供的 skill 加载机制调度 5 个子 skill。
-- 使用 `rg`、`rg --files`、目录列表和 shell 检测产物文件。
-- 使用可用文件读写工具维护 `pipeline-status.md` 和偏好记录。
+优先使用 `rg`、`rg --files`、目录列表和当前环境的 skill 加载机制。复杂链路维护 `<ARTIFACT_ROOT>/pipeline-status.md`。

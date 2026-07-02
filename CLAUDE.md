@@ -8,9 +8,6 @@ Primary skill entry:
 skills/superui/SKILL.md
 ```
 
-The skill suite is platform-neutral. Claude-specific usage should still rely on the same `skills/` directory and the same shared artifacts:
+The skill suite is platform-neutral. Claude should start from `skills/superui/SKILL.md` and let SuperUI route to child skills and shared references by need.
 
-- `skills/superui-shared/OUTPUT_POLICY.md`
-- `skills/superui-shared/USER_PREFERENCES.md`
-- `skills/superui-shared/RESPONSIVE_RULES.md`
-- `skills/superui-shared/rubric-locked.md`
+Do not eagerly load every file under `skills/superui-shared/`; those references are intentionally progressive.
