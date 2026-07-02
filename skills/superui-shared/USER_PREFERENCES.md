@@ -2,13 +2,20 @@
 
 This file is the local fallback for long-lived SuperUI preferences.
 
-Preferred system-level location:
+Preferred user-level location:
+
+```text
+~/.superui/USER_PREFERENCES.md
+```
+
+Platform-specific alternatives:
 
 ```text
 ~/.codex/superui/USER_PREFERENCES.md
+~/.claude/superui/USER_PREFERENCES.md
 ```
 
-Use this file only when the system-level location is unavailable or not writable.
+Use this file only when user-level locations are unavailable or not writable.
 
 ## Recording Rules
 

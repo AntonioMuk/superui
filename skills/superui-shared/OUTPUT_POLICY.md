@@ -15,7 +15,14 @@ Long-lived user preferences are not project artifacts.
 Preferred path:
 
 ```text
+~/.superui/USER_PREFERENCES.md
+```
+
+Platform-specific paths are also acceptable when the runtime has a convention:
+
+```text
 ~/.codex/superui/USER_PREFERENCES.md
+~/.claude/superui/USER_PREFERENCES.md
 ```
 
 Fallback path:

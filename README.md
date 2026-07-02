@@ -1,8 +1,8 @@
 # SuperUI
 
-SuperUI 是一套面向前端 UI 工作流的 Codex skill 集合。它不是单个“生成页面”的提示词，而是一套从设计分析、设计规范、方案规划、TDD 实现到交叉审核的完整前端协作流程。
+SuperUI 是一套面向前端 UI 工作流的 AI agent skill / workflow 集合。它不绑定某一个 agent 平台，也不是单个“生成页面”的提示词，而是一套从设计分析、设计规范、方案规划、TDD 实现到交叉审核的完整前端协作流程。
 
-它的目标是让 agent 在做前端时不再直接跳到代码，而是先理解设计意图、沉淀可复用产物，再用可验证的方式落地实现。
+它可以被 Codex、Claude、OpenAI Agents、Cursor、Windsurf 或其他支持 skill / rule / workflow 机制的 coding agent 使用。目标是让 agent 在做前端时不再直接跳到代码，而是先理解设计意图、沉淀可复用产物，再用可验证的方式落地实现。
 
 ## SuperUI 可以做什么
 
@@ -61,13 +61,20 @@ SuperUI 每次运行都会先确定一个统一的 `<ARTIFACT_ROOT>`，所有子
 <current_workspace>/outputs/<project>/
 ```
 
-长期用户偏好不是项目产物，优先写入系统级位置：
+长期用户偏好不是项目产物，建议写入用户级 SuperUI 目录：
+
+```text
+~/.superui/USER_PREFERENCES.md
+```
+
+如果运行环境有自己的用户级 skill 目录，也可以使用对应平台路径，例如：
 
 ```text
 ~/.codex/superui/USER_PREFERENCES.md
+~/.claude/superui/USER_PREFERENCES.md
 ```
 
-如果系统级位置不可用，则回退到：
+如果用户级位置不可用，则回退到仓库内模板：
 
 ```text
 skills/superui-shared/USER_PREFERENCES.md
