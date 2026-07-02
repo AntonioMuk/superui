@@ -87,59 +87,71 @@ breakpoints:
 - 品牌调性：是什么感觉（专业/活泼/极简/奢华）
 - 设计哲学：为什么选择这些设计决策
 
-### 2. Colors ← 对应 requirements 的"配色与样式"
+### 2. Design Intelligence
+- Product type：产品/业务类型
+- Audience：目标用户和使用场景
+- Primary job：用户在界面中的主要任务
+- Density：稀疏/均衡/密集
+- Trust level：普通/交易/金融/医疗/政务/安全敏感
+- Platform：桌面 Web / 移动 Web / 响应式 Web App / 原生 App / 沉浸式
+- Brand posture：冷静/高级/活泼/技术/编辑感/工具型/表达型
+- Recommended pattern：推荐页面/应用模式
+- Style rationale：为什么这种风格适合该产品
+- Anti-patterns to avoid：必须规避的反模式
+
+### 3. Colors ← 对应 requirements 的"配色与样式"
 - 主色/品牌色：hex + 使用场景
 - 功能色：成功/警告/危险/信息 + 各状态
 - 中性色：文本阶、背景阶、边框阶
 - 语义化命名规则
 - 对比度合规声明
 
-### 3. Typography ← 对应 requirements 的"排版规则"
+### 4. Typography ← 对应 requirements 的"排版规则"
 - 字体族选择理由
 - 字号层级的视觉逻辑
 - 字重分配规则
 - 行高与段落间距
 
-### 4. Layout ← 对应 requirements 的"布局"
+### 5. Layout ← 对应 requirements 的"布局"
 - 栅格系统说明
 - 页面分区模式
 - 间距基准与刻度
 - 列表/网格布局偏好
 
-### 5. Elevation & Depth ← 对应 requirements 的"阴影与层级"
+### 6. Elevation & Depth ← 对应 requirements 的"阴影与层级"
 - 阴影系统定义
 - z-index 分层规范
 - 表面层级关系
 
-### 6. Shapes
+### 7. Shapes
 - 圆角体系
 - 图标风格
 - 装饰元素规则
 
-### 7. Components
+### 8. Components
 - 按钮（变体×尺寸矩阵）
 - 输入框（状态矩阵）
 - 卡片
 - 导航
 - 弹窗/抽屉/对话框
 
-### 8. Interaction Loop ← ⭐ 扩展部分，Google 原版没有
+### 9. Interaction Loop ← ⭐ 扩展部分，Google 原版没有
 - 操作-反馈闭环总览
 - CRUD 闭环（每实体的触发→校验→请求→反馈→同步）
 - 加载态策略
 - 错误处理策略
 - 乐观更新策略
 
-### 9. Do's and Don'ts
+### 10. Do's and Don'ts
 - 每个核心组件/场景的正确 vs 错误用法
 - 配图说明（文字描述即可）
 
-### 10. Responsive Behavior ← 对应 requirements 的"响应式设计"
+### 11. Responsive Behavior ← 对应 requirements 的"响应式设计"
 - 断点体系
 - 各断点行为规则
 - 移动端特殊处理
 
-### 11. Agent Prompt Guidelines
+### 12. Agent Prompt Guidelines
 - 给 AI coding agent 的指令：如何根据此 DESIGN.md 生成 UI
 - 禁止项（`MUST NOT`）
 - 强制项（`SHALL`）

@@ -10,6 +10,7 @@ description: "Use when reviewing or auditing SuperUI plans, DESIGN.md files, fro
 ## 核心规则
 
 - **rubric-locked.md 全程锁定**：审核标准在审核启动时从 `skills/superui-shared/rubric-locked.md` 读取，全程不可修改。防止"审着审着标准变了"。
+- **设计情报与工程门禁必审**：同时读取 `DESIGN_INTELLIGENCE.md` 和 `ENGINEERING_GATES.md`，检查产品/受众适配、反模式、证据链、最小范围、复用和兼容性。
 - **SubAgent 隔离运行**：三个 SubAgent 各自独立审核，互不知晓彼此的结论。若当前环境支持 subagent，就并行派发；否则由主 agent 按三角色顺序独立完成，避免互相污染。
 - **Chairman 不做新评审**：Chairman 只做汇聚、提问、裁决，不引入新的评审意见。
 - **最多 3 轮提问硬约束**：第三轮后强制终止。非核心分歧用默认值兜底由 Chairman 裁决；核心分歧写入 `review-conflicts.json` 提请人类决策。
@@ -48,7 +49,7 @@ Step 5   执行修改 → 增量审核（可选）
 
 ## Step 1：加载审核标准
 
-读取 `skills/superui-shared/rubric-locked.md` 获取锁定的审核标准。如该文件不存在，创建默认版本：
+读取 `skills/superui-shared/rubric-locked.md`、`skills/superui-shared/DESIGN_INTELLIGENCE.md`、`skills/superui-shared/ENGINEERING_GATES.md` 获取锁定的审核标准。如 `rubric-locked.md` 不存在，创建默认版本：
 
 ```markdown
 # rubric-locked.md（锁定审核标准，全程不可修改）
@@ -70,6 +71,14 @@ Step 5   执行修改 → 增量审核（可选）
 - 所有文本对比度 ≥ 4.5:1（正文）/ 3:1（大文本）
 - 所有可交互元素可键盘到达
 - 可见 focus 指示器
+
+## Design Intelligence
+- 产品类型、受众、密度、平台与 DESIGN.md 的风格方向一致
+- 高信任行业不得使用削弱信任的娱乐化风格
+- 明确记录 anti-patterns，并在代码/方案中规避
+
+## Engineering Gates
+- 证据确凿、最小范围、手术创伤、测试驱动、有效注释、奥卡姆剃刀、优先复用、最佳兼容均有证据
 ```
 
 ---
@@ -125,6 +134,8 @@ Step 5   执行修改 → 增量审核（可选）
 1. 需求文档 / DESIGN.md / 产出代码三者是否一致
 2. 实现是否脱离设计框架（颜色值是否匹配 token、间距是否匹配 spacing、字号是否匹配 typography）
 3. Token 引用是否合规（是否用 CSS 变量而非硬编码、Tailwind 是否引用设计 token 类名）
+4. Design Intelligence 是否被落实：产品类型、受众、密度、信任等级、反模式是否与实现一致
+5. Engineering Gates 是否有证据：证据链、最小范围、复用、兼容性是否完整
 
 ## 输出格式
 格式：`[文件:行号] | DESIGN.md 定义: {值} | 代码实际: {值} | 偏离等级: 🟢一致/🟡小偏/🟠中偏/🔴严重 | 修复建议`
@@ -219,6 +230,10 @@ rubric-locked.md 中有关键维度过但三份报告均未覆盖：[列出]
 - 总项数: N
 - 已覆盖: M
 - 未覆盖: K（附说明）
+
+## Engineering Gates 覆盖度
+| Gate | 结论 | 证据/缺口 |
+|------|------|-----------|
 ```
 
 ---
@@ -248,4 +263,6 @@ rubric-locked.md 中有关键维度过但三份报告均未覆盖：[列出]
 
 - subagent / multi-agent 工具（如可用）：并行派发三角色审查；不可用时降级为主 agent 分角色审查
 - `skills/superui-shared/rubric-locked.md`：锁定的审核标准
+- `skills/superui-shared/DESIGN_INTELLIGENCE.md`：设计情报、行业适配和反模式
+- `skills/superui-shared/ENGINEERING_GATES.md`：工程原则自查与审核门禁
 
