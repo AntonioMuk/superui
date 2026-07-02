@@ -1,0 +1,7 @@
+interface:
+  display_name: "SuperUI Planner"
+  short_description: "Plan frontend work from DESIGN.md into specs and tests"
+  default_prompt: "Use $superui-planner to turn DESIGN.md into a frontend implementation plan, specs, and test plan."
+
+policy:
+  allow_implicit_invocation: true

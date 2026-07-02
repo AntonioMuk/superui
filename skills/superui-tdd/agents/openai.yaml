@@ -1,0 +1,7 @@
+interface:
+  display_name: "SuperUI TDD"
+  short_description: "Implement frontend UI with tests and responsive constraints"
+  default_prompt: "Use $superui-tdd to implement frontend UI from DESIGN.md and specs using TDD."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "SuperUI"
+  short_description: "Frontend UI design, planning, implementation, and review"
+  default_prompt: "Use $superui to build, redesign, analyze, implement, or review a frontend UI with durable design artifacts."
+
+policy:
+  allow_implicit_invocation: true

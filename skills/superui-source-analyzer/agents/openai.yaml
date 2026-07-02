@@ -1,0 +1,7 @@
+interface:
+  display_name: "SuperUI Source Analyzer"
+  short_description: "Extract UI structure and design evidence from frontend code"
+  default_prompt: "Use $superui-source-analyzer to analyze this frontend project and extract layout, interaction, and style evidence."
+
+policy:
+  allow_implicit_invocation: true

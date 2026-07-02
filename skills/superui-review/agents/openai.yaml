@@ -1,0 +1,7 @@
+interface:
+  display_name: "SuperUI Review"
+  short_description: "Review plans, code, accessibility, and token compliance"
+  default_prompt: "Use $superui-review to audit SuperUI plans or code and produce an improvement plan."
+
+policy:
+  allow_implicit_invocation: true

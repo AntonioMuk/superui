@@ -1,0 +1,7 @@
+interface:
+  display_name: "SuperUI DESIGN.md"
+  short_description: "Create DESIGN.md tokens, rules, and previews"
+  default_prompt: "Use $superui-design-md to create or update a DESIGN.md design system with previews."
+
+policy:
+  allow_implicit_invocation: true
