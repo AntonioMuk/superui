@@ -1,179 +1,178 @@
 # SuperUI
 
-SuperUI 是一套面向前端 UI 工作流的 AI agent skill / workflow 集合。它不绑定某一个 agent 平台，也不是单个“生成页面”的提示词，而是一套从设计分析、设计规范、方案规划、TDD 实现到交叉审核的完整前端协作流程。
+> 让 coding agent 不再“直接开写页面”，而是先理解设计、沉淀规范、规划方案、测试落地、交叉审核。
 
-它可以被 Codex、Claude、OpenAI Agents、Cursor、Windsurf 或其他支持 skill / rule / workflow 机制的 coding agent 使用。目标是让 agent 在做前端时不再直接跳到代码，而是先理解设计意图、沉淀可复用产物，再用可验证的方式落地实现。
+SuperUI 是一套面向前端 UI 工作流的 agent-agnostic skill suite。它不是单个提示词，也不绑定某一个 agent 平台；它把前端协作拆成一条可恢复、可审计、可持续进化的链路：
 
-## SuperUI 可以做什么
+```text
+分析现有界面 -> 生成 DESIGN.md -> 规划方案与测试 -> TDD 实现 -> Plan / Code Gate 审核
+```
 
-SuperUI 覆盖前端 UI 的完整生命周期：
+适合用来创建、改造和审核网页、管理后台、dashboard、landing page、React/Vue 组件、设计系统和响应式界面。
 
-- 分析现有 React、Vue、Next、Nuxt、Vite 等前端项目。
-- 提取路由结构、页面布局、响应式策略、交互闭环、颜色、字体、组件样式和源码证据。
-- 生成或更新 `DESIGN.md` 设计规范，包括设计 token、组件规则、响应式行为和亮/暗主题预览。
-- 判断任务应该走“存量改造”还是“全新设计”。
-- 基于 `DESIGN.md` 生成方案文档、行为规格和测试计划。
-- 用 TDD 方式实现前端 UI，约束 token 使用、响应式布局、视觉契约、交互行为和可访问性。
-- 对方案和代码做 Plan Gate / Code Gate 审核，输出 `improvement-plan.md`。
-- 记录用户长期偏好，让后续 UI 工作不断贴近用户审美和工程习惯。
+## 为什么是 SuperUI
 
-## 技能结构
+通用 coding agent 做前端时，常见问题不是“不会写代码”，而是跳得太快：
+
+- 设计意图没有沉淀，下一轮对话就丢。
+- token、间距、字号、状态和响应式规则各写各的。
+- 页面看似完成，但 loading、empty、error、权限、极端数据没有闭环。
+- 改造存量项目时，缺少证据链，容易大拆大改。
+- 审核标准漂移，今天说好、明天又推翻。
+
+SuperUI 把这些隐性工作显式化。它让 agent 先形成可复用产物，再进入实现；让设计、工程和审核都能被后续 agent 继续读取。
+
+## 能做什么
+
+| 能力 | 产物 |
+|------|------|
+| 分析现有前端项目 | `analysis/layout.md`、`interaction.md`、`style.md` |
+| 生成设计规范 | `DESIGN.md`、`preview.html`、`preview-dark.html` |
+| 判断改造还是新建 | `determination-report.md` |
+| 输出落地方案 | `proposal.md` 或 `design-proposal.md` |
+| 拆解行为规格 | `specs/*.md` |
+| 制定测试计划 | `test-plan.md` |
+| TDD 实现 UI | 代码、测试、`design-adjustments.md` |
+| 交叉审核 | `review/*.md`、`review/improvement-plan.md` |
+| 记住长期偏好 | `~/.superui/USER_PREFERENCES.md` 或项目本地偏好 |
+
+## 设计效果
+
+SuperUI 追求的不是“生成一个看起来还行的页面”，而是让前端产物进入更稳定的协作状态：
+
+- 视觉一致：颜色、字体、间距、圆角、阴影进入 DESIGN.md，而不是散落在代码里。
+- 风格贴合：生成前判断产品类型、受众、信息密度、信任等级、平台和反模式。
+- 响应式可靠：显式检查固定宽度、主布局 absolute、移动端溢出、断点行为等问题。
+- 交互完整：关注 CRUD 闭环、加载态、成功反馈、错误反馈、乐观更新和状态同步。
+- 可访问性可测：覆盖键盘导航、focus、对比度、label、alt、语义结构。
+- 改造有证据：先分析存量项目，再决定保留、替换、新增或移除。
+- 审核可收敛：Plan Gate / Code Gate 使用锁定 rubric，最多三轮收敛，避免无休止争论。
+- 越用越贴合：用户明确表达的长期偏好会沉淀为软约束。
+
+## Skill 结构
 
 ```text
 skills/
-  superui/                    # 总控入口：识别意图、选择产物路径、调度子 skill
-  superui-source-analyzer/    # 源码分析：提取布局、交互、样式和证据
-  superui-design-md/          # DESIGN.md：生成设计规范和可视化预览
-  superui-planner/            # 方案规划：生成 proposal、specs、test-plan
+  superui/                    # 总控入口：定路径、读偏好、判阶段、调度子 skill
+  superui-source-analyzer/    # 源码分析：布局、交互、样式、证据链
+  superui-design-md/          # DESIGN.md：设计 token、组件规则、双色预览
+  superui-planner/            # 方案规划：改造/新建判别、proposal、specs、test-plan
   superui-tdd/                # TDD 实现：测试先行、token 约束、响应式落地
-  superui-review/             # 交叉审核：方案/代码审核和改进计划
-  superui-shared/             # 共享规则：设计情报、设计交付清单、工程门禁、响应式约束、审核标准、产物策略、偏好模板
+  superui-review/             # 交叉审核：Plan Gate、Code Gate、improvement-plan
+  superui-shared/             # 共享规则：路径策略、偏好、响应式、工程门禁、审核标准
 ```
 
-## 多 Agent 生态兼容
+`superui` 是唯一总入口。它会按需读取共享文件，不会把全部规则一次性塞进上下文。
 
-SuperUI 参考 Superpowers 的多生态组织方式：核心能力放在统一的 `skills/` 目录，平台适配层只负责发现、安装和工具映射。
+## 多 Agent 生态
 
-当前仓库包含这些入口：
+SuperUI 的核心能力只维护在 `skills/` 中；不同 agent 生态只做薄适配，负责发现技能、注入入口和映射工具。
 
-- `AGENTS.md`：通用 agent / OpenAI Agents / Codex 风格入口。
-- `CLAUDE.md` 与 `.claude-plugin/plugin.json`：Claude / Claude Code 入口。
-- `.codex-plugin/plugin.json`：Codex App / Codex CLI 插件元数据。
-- `.cursor-plugin/plugin.json` 与 `.cursor/rules/superui.mdc`：Cursor 入口。
-- `GEMINI.md` 与 `gemini-extension.json`：Gemini 入口。
-- `.kimi-plugin/plugin.json`：Kimi Code 插件元数据和工具映射。
-- `.opencode/INSTALL.md`：OpenCode 安装说明。
-- `.windsurf/rules/superui.md`：Windsurf 规则入口。
-- `package.json`：为 git-backed package / Pi-style skill 加载保留元数据。
+| 生态 | 入口 |
+|------|------|
+| 通用 agent / OpenAI Agents / Codex 风格 | `AGENTS.md` |
+| Claude / Claude Code | `CLAUDE.md`、`.claude-plugin/plugin.json` |
+| Codex App / Codex CLI | `.codex-plugin/plugin.json`、`AGENTS.md` |
+| Cursor | `.cursor-plugin/plugin.json`、`.cursor/rules/superui.mdc` |
+| Gemini | `GEMINI.md`、`gemini-extension.json` |
+| Kimi Code | `.kimi-plugin/plugin.json` |
+| OpenCode | `.opencode/INSTALL.md`、`.opencode/plugins/superui.js` |
+| Windsurf | `.windsurf/rules/superui.md` |
 
-详细说明见：
+兼容性细节见：
+
+- [docs/AGENT_ECOSYSTEMS.md](docs/AGENT_ECOSYSTEMS.md)
+- [docs/COMPATIBILITY_MATRIX.md](docs/COMPATIBILITY_MATRIX.md)
+
+## 典型用法
+
+分析现有项目并提取设计系统：
 
 ```text
-docs/AGENT_ECOSYSTEMS.md
-docs/COMPATIBILITY_MATRIX.md
+Use SuperUI to analyze this React project and extract its UI design system.
 ```
 
-## 能达到什么效果
-
-使用 SuperUI 后，前端产物会更接近“可持续协作”的状态：
-
-- **设计更一致**：颜色、字体、间距、圆角、阴影等规则沉淀到 `DESIGN.md`，减少临时发挥。
-- **风格更贴合场景**：生成前先判断产品类型、受众、密度、信任等级、平台和反模式。
-- **可借力本地设计知识库**：需要时会检查本地是否安装 `ui-ux-pro-max-skill`，可引用其设计系统推荐作为灵感来源。
-- **外部增强不阻塞**：未安装 `ui-ux-pro-max-skill` 时会建议可选安装，但本次任务继续走 SuperUI 内置流程。
-- **设计交付更完整**：吸收 Front-End Design Checklist 思路，检查网格、色板、字体、状态、响应式、组件化、素材和错误页。
-- **过程可追溯**：分析、方案、测试、偏离记录、审核意见都会形成文件产物。
-- **响应式更稳**：通过 `RESPONSIVE_RULES.md` 明确禁止固定宽度、主布局 absolute、响应式 `!important` 等问题。
-- **交互更完整**：关注 CRUD 闭环、加载态、成功反馈、错误反馈、乐观更新和状态同步。
-- **可访问性更可靠**：测试和审核覆盖键盘导航、focus、对比度、表单 label、图片 alt 等检查项。
-- **跨会话可恢复**：后续 agent 可以从 `.superui/` 或 `outputs/` 中恢复上下文，不必重新猜设计意图。
-- **越用越贴近偏好**：用户明确表达的长期偏好会被记录，下次生成 UI 时自动作为软约束参考。
-- **工程更稳**：方案和审核会检查证据链、最小范围、TDD、复用、兼容性等工程门禁。
-
-## 产物位置策略
-
-SuperUI 每次运行都会先确定一个统一的 `<ARTIFACT_ROOT>`，所有子 skill 共用这个目录，避免产物散落。
-
-选择顺序：
-
-1. 用户明确指定产物目录。
-2. 如果能识别目标项目根目录，默认写入：
+根据描述生成 DESIGN.md：
 
 ```text
-<target_project>/.superui/<project>/
+Use SuperUI to create a DESIGN.md for a dense enterprise dashboard with restrained visual styling.
 ```
 
-3. 如果没有明确目标项目，默认写入：
+从设计规范规划并实现页面：
 
 ```text
-<current_workspace>/outputs/<project>/
+Use SuperUI to plan and implement this admin page from DESIGN.md with TDD and accessibility checks.
 ```
 
-长期用户偏好不是项目产物，建议写入用户级 SuperUI 目录：
+只做方案或代码审核：
+
+```text
+Use SuperUI review to audit this plan/code for responsive behavior, token compliance, and interaction completeness.
+```
+
+支持 `$skill-name` 的平台也可以直接使用：
+
+```text
+$superui
+$superui-design-md
+$superui-review
+```
+
+## 产物放在哪里
+
+SuperUI 每次运行都会先确定统一的 `<ARTIFACT_ROOT>`，所有子 skill 共用该目录。
+
+优先级：
+
+1. 用户显式指定的目录。
+2. 能识别目标项目时：`<target_project>/.superui/<project>/`。
+3. 没有明确目标项目时：`<current_workspace>/outputs/<project>/`。
+
+长期用户偏好建议放在：
 
 ```text
 ~/.superui/USER_PREFERENCES.md
 ```
 
-如果运行环境有自己的用户级 skill 目录，也可以使用对应平台路径，例如：
+平台也可以使用自己的用户级路径，例如：
 
 ```text
 ~/.codex/superui/USER_PREFERENCES.md
 ~/.claude/superui/USER_PREFERENCES.md
 ```
 
-如果用户级位置不可写，不要把长期偏好写回仓库内模板。应优先写入当前项目的本地私有文件：
+用户级位置不可写时，写入项目本地私有文件：
 
 ```text
 <target_project>/.superui/preferences.local.md
 ```
 
-仓库内文件仅作为模板读取：
+## 可选增强
 
-```text
-skills/superui-shared/USER_PREFERENCES.md
+生成 DESIGN.md 时，SuperUI 可以按需检查本地是否安装 `ui-ux-pro-max-skill`，并尝试引用它的设计系统、配色、字体、UX、图表和技术栈建议。
+
+这不是硬依赖。未安装或不可用时，SuperUI 会继续使用内置 `DESIGN_INTELLIGENCE.md` 流程，并提示用户可选安装。
+
+## 安装提示
+
+不同平台的安装方式不同。最小原则是：让目标 agent 能看到本仓库的 `skills/`，并从 `skills/superui/SKILL.md` 作为入口开始。
+
+OpenCode 可参考：
+
+```json
+{
+  "plugin": ["superui@git+https://github.com/AntonioMuk/superui.git"]
+}
 ```
 
-## 典型用法
-
-分析现有项目：
-
-```text
-Use SuperUI to analyze this React project and extract its UI design system.
-```
-
-根据描述生成设计规范：
-
-```text
-Use SuperUI to create a DESIGN.md for a dense enterprise dashboard with restrained visual styling.
-```
-
-规划并实现页面：
-
-```text
-Use SuperUI to plan and implement this admin page from DESIGN.md with TDD and accessibility checks.
-```
-
-审核方案或代码：
-
-```text
-Use SuperUI review to audit this plan/code for responsive behavior, token compliance, and interaction completeness.
-```
-
-在支持 `$skill-name` 语法的平台中，也可以使用 `$superui` 或 `$superui-review` 直接调用。
-
-## 工作流概览
-
-```text
-用户需求
-  ↓
-superui 总控
-  ↓
-确定 ARTIFACT_ROOT + 读取用户偏好
-  ↓
-源码分析 / DESIGN.md / 方案规划 / TDD 实现 / 交叉审核
-  ↓
-生成可复用产物
-  ↓
-后续会话继续复用和迭代
-```
-
-## 为什么需要 SuperUI
-
-通用 coding agent 很容易把“做一个页面”理解成“立刻写代码”。这样短期看起来很快，但长期会出现几个问题：
-
-- 设计规则没有沉淀。
-- 响应式和可访问性容易靠运气。
-- 多轮对话后设计意图丢失。
-- 修改和审核没有证据链。
-- 用户偏好不能持续积累。
-
-SuperUI 的价值在于把这些隐性工作显式化：先分析、再规范、再规划、再测试、再实现、再审核。最终得到的不是一次性的页面，而是一套能被 agent 反复读取、验证和延续的前端 UI 工作流。
+更多平台请查看对应入口文件：`AGENTS.md`、`CLAUDE.md`、`GEMINI.md`、`.cursor/rules/superui.mdc`、`.windsurf/rules/superui.md`。
 
 ## 示例来源与许可
 
-`skills/superui-design-md/examples/` 包含来自 VoltAgent `awesome-design-md` 的 DESIGN.md 示例，用于帮助 agent 理解高质量设计规范的写法。该目录保留其原始 MIT 许可证，详见：
+`skills/superui-design-md/examples/` 包含来自 VoltAgent `awesome-design-md` 的 DESIGN.md 示例，用于帮助 agent 理解高质量设计规范的写法。该目录保留其原始 MIT 许可证：
 
 ```text
 skills/superui-design-md/examples/LICENSE
 ```
+
+本仓库使用 MIT License。
