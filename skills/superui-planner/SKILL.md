@@ -13,6 +13,7 @@ description: "Use when planning frontend UI work from DESIGN.md: deciding redesi
 - **所有判别过程留痕**：输出判别报告，记录每根探针的判断依据和结论。
 - **DESIGN.md 是唯一真相源**：方案中的所有设计决策必须引用 DESIGN.md 中的 token 或规则。不可凭空创造新的设计参数。
 - **工程门禁必须入案**：读取 `skills/superui-shared/ENGINEERING_GATES.md`，在方案和测试计划中加入 SuperUI Engineering Gates 自查表。
+- **设计交付完整性必须检查**：读取 `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`，确认网格、状态、响应式、组件、素材和错误页信息足够进入实现。
 - **产物写入** `<ARTIFACT_ROOT>/`。
 - **偏好只影响取舍，不覆盖证据**：长期偏好可影响技术栈、密度、组件库等选择；不得覆盖 DESIGN.md 和源码事实。
 
@@ -169,6 +170,9 @@ Step 4  生成 specs/*.md + test-plan.md
 
 ## SuperUI Engineering Gates
 [按 ENGINEERING_GATES.md 填写 8 项自查表]
+
+## Design Handoff Checklist
+[按 DESIGN_HANDOFF_CHECKLIST.md 确认设计交付是否足够实现]
 ```
 
 ### 3B：全新路径
@@ -224,6 +228,9 @@ Step 4  生成 specs/*.md + test-plan.md
 
 ## SuperUI Engineering Gates
 [按 ENGINEERING_GATES.md 填写 8 项自查表]
+
+## Design Handoff Checklist
+[按 DESIGN_HANDOFF_CHECKLIST.md 确认设计交付是否足够实现]
 ```
 
 ---
@@ -313,4 +320,5 @@ Step 4  生成 specs/*.md + test-plan.md
 - `superui-source-analyzer`：存量项目分析（改造路径使用）
 - `superui-design-md`：DESIGN.md 不存在时触发生成
 - `skills/superui-shared/ENGINEERING_GATES.md`：方案、测试计划和审核门禁
+- `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`：设计交付完整性检查
 

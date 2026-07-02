@@ -27,7 +27,7 @@ skills/
   superui-planner/            # 方案规划：生成 proposal、specs、test-plan
   superui-tdd/                # TDD 实现：测试先行、token 约束、响应式落地
   superui-review/             # 交叉审核：方案/代码审核和改进计划
-  superui-shared/             # 共享规则：设计情报、工程门禁、响应式约束、审核标准、产物策略、偏好模板
+  superui-shared/             # 共享规则：设计情报、设计交付清单、工程门禁、响应式约束、审核标准、产物策略、偏好模板
 ```
 
 ## 多 Agent 生态兼容
@@ -60,6 +60,8 @@ docs/COMPATIBILITY_MATRIX.md
 - **设计更一致**：颜色、字体、间距、圆角、阴影等规则沉淀到 `DESIGN.md`，减少临时发挥。
 - **风格更贴合场景**：生成前先判断产品类型、受众、密度、信任等级、平台和反模式。
 - **可借力本地设计知识库**：需要时会检查本地是否安装 `ui-ux-pro-max-skill`，可引用其设计系统推荐作为灵感来源。
+- **外部增强不阻塞**：未安装 `ui-ux-pro-max-skill` 时会建议可选安装，但本次任务继续走 SuperUI 内置流程。
+- **设计交付更完整**：吸收 Front-End Design Checklist 思路，检查网格、色板、字体、状态、响应式、组件化、素材和错误页。
 - **过程可追溯**：分析、方案、测试、偏离记录、审核意见都会形成文件产物。
 - **响应式更稳**：通过 `RESPONSIVE_RULES.md` 明确禁止固定宽度、主布局 absolute、响应式 `!important` 等问题。
 - **交互更完整**：关注 CRUD 闭环、加载态、成功反馈、错误反馈、乐观更新和状态同步。

@@ -71,6 +71,8 @@ Step 6  Lint 校验 → @google/design.md CLI
 4. 明确记录 Adopted / Rejected / Reason，避免无条件照搬。
 5. 未安装或运行失败时，使用 `DESIGN_INTELLIGENCE.md` 的矩阵手动推导，并在 DESIGN.md 标注 `External inspiration: not available`。
 
+未安装或不可用时不得阻塞任务。继续走 SuperUI 自己的完整流程，并在最终回复或交接说明中建议用户可选安装 `ui-ux-pro-max-skill` 以增强未来的风格、配色、字体、UX、图表和技术栈推荐。
+
 该外部工具只能作为建议来源，不作为 SuperUI 的必需依赖。
 
 ---
@@ -139,6 +141,7 @@ Step 6  Lint 校验 → @google/design.md CLI
 10. **Do's and Don'ts**：每个核心组件至少 1 对正反例
 11. **Responsive Behavior**：断点行为、移动端特殊规则
 12. **Agent Prompt Guidelines**：给 AI 的指令（禁止项 `MUST NOT` + 强制项 `SHALL`）
+13. **Design Handoff Checklist**：网格、色板、字体、状态、响应式、组件化、素材、错误页等交付检查
 
 ---
 
@@ -198,4 +201,5 @@ npx @google/design.md lint DESIGN.md
 - 案例库：`examples/design-md/`（本 skill 内置，使用相对路径即可）
 - 模板：`templates/DESIGN.md.template.md`（本 skill 内置）
 - 共享规则：`skills/superui-shared/DESIGN_INTELLIGENCE.md`
+- 共享规则：`skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`
 

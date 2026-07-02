@@ -121,6 +121,22 @@ python <path-to-search.py> "<keyword>" --stack react
 
 Use Windows `python` when `python3` is unavailable.
 
+### If Not Installed
+
+If no usable installation is found or the script fails:
+
+1. Continue with SuperUI's built-in `DESIGN_INTELLIGENCE.md` workflow without blocking the task.
+2. Record `External inspiration: not available` in `DESIGN.md`.
+3. Recommend installation to the user in the final response or handoff notes when it would materially improve future design recommendations.
+
+Suggested wording:
+
+```text
+Optional enhancement: install ui-ux-pro-max-skill to provide searchable UI style, palette, typography, UX, chart, and stack recommendations. SuperUI worked from its built-in design intelligence for this run.
+```
+
+Do not repeatedly ask during the same task. One recommendation per completed run is enough.
+
 ### Required Citation in DESIGN.md
 
 If `ui-ux-pro-max-skill` was used, record a short citation in `DESIGN.md`:

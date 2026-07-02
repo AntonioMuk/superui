@@ -157,3 +157,14 @@ breakpoints:
 - 强制项（`SHALL`）
 - 降级策略
 
+### 13. Design Handoff Checklist
+- Grid：列数、gutter、max-width、断点变化
+- Colors：语义命名、亮/暗背景、按钮/链接/输入状态
+- Typography：字体来源、fallback、授权/加载策略、长文本扩展
+- Links & Navigation：default/hover/focus/active/visited/current 状态
+- Images & Icons：SVG/vector 优先、命名规则、favicon/app icon、alt 策略
+- Forms & Buttons：label/helper/error/loading/disabled/pressed/required 状态
+- Responsive：mobile/tablet/desktop/wide 的明确行为
+- Components：可复用组件、变体、状态矩阵
+- Delivery：404/500、empty/loading/error、modal/dialog、素材目录和命名
+
