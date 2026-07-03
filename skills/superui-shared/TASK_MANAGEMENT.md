@@ -1,85 +1,80 @@
 # 结构化清单
 
-当 SuperUI 需要跨 agent 记录任务、交接状态、决策证据和交付结果时读取本文件。
+当 SuperUI 需要跨 agent 跟踪任务、恢复进度或交接执行时读取本文件。
 
 ## 原则
 
-不要记录私有逐字推理过程。只记录用户可见、可审计的工作产物：任务、决策、证据、假设、阻塞、验证结果和交付状态。
+参考 Superpowers 的做法：运行时使用 agent 原生 todo，耐久状态写入文件。不要记录私有逐字推理过程，只记录任务、证据、阻塞、验证结果和必要取舍。
 
 ## 统一文件
 
-| 文件 | 用途 | 更新时机 |
-|------|------|----------|
-| `<ARTIFACT_ROOT>/todo.md` | 跨 agent 任务清单 | 任务开始创建；每个阶段开始和结束更新 |
-| `<ARTIFACT_ROOT>/decision-log.md` | 可审计决策链 | 设计、规划、实现或审核决策影响结果时更新 |
-| `<ARTIFACT_ROOT>/delivery-checklist.md` | 完成度与交付检查 | 声明阶段或任务完成前更新 |
-| `<ARTIFACT_ROOT>/pipeline-status.md` | 当前阶段与下一步 | 阶段切换时更新 |
+| 文件 | 用途 | 必要性 |
+|------|------|--------|
+| `<ARTIFACT_ROOT>/todo.md` | 便携 checkbox 任务清单 | 必需 |
+| `<ARTIFACT_ROOT>/progress.md` | 可恢复进度账本 | 必需 |
+| `<ARTIFACT_ROOT>/pipeline-status.md` | 当前阶段和下一步 | 必需 |
+
+不要默认创建额外管理文件。重大设计或工程取舍写入 `progress.md` 的短条目；只有用户或项目流程明确要求时，才额外创建专门决策文档。
 
 ## todo.md
 
-使用 Markdown checkbox，保证 Codex、Claude、Cursor、Cline、OpenCode、Gemini、Windsurf 和普通编辑器都能读取。
+使用 Markdown checkbox，方便 Codex、Claude、Cursor、Cline、OpenCode、Gemini、Windsurf 和普通编辑器读取。
 
 ```markdown
 # SuperUI Todo
 
-| Active stage | Owner | Last update |
-|--------------|-------|-------------|
-| [stage] | [agent/tool] | [date/time] |
+> REQUIRED: mirror these items into the current agent's native todo/task tool when available.
 
-## Tasks
-
-- [ ] [pending] Determine artifact root
-- [ ] [pending] Load preferences
-- [ ] [pending] Generate or update DESIGN.md
-- [ ] [pending] Plan implementation and tests
-- [ ] [pending] Run Plan Gate
-- [ ] [pending] Implement with tests
-- [ ] [pending] Run Code Gate
-- [ ] [pending] Final delivery
-
-## Blockers
-
-- [blocked item] - [needed input or evidence]
+- [ ] Determine artifact root
+- [ ] Load preferences
+- [ ] Generate or update DESIGN.md
+- [ ] Plan implementation and tests
+- [ ] Run Plan Gate
+- [ ] Implement with tests
+- [ ] Run Code Gate
+- [ ] Final delivery
 ```
 
-状态词固定为 `pending`、`in_progress`、`blocked`、`done`。除非当前环境明确支持并行 subagent，否则最多保留一个 `in_progress`。
+规则：
+- 每个任务应能独立产生可检查产物。
+- 当前任务在原生 todo 中标为 `in_progress`；文件里用 checkbox 记录完成状态。
+- 任务阻塞时不要勾选，在 `progress.md` 记录阻塞原因和需要的输入。
 
-## decision-log.md
+## progress.md
+
+`progress.md` 是压缩上下文后恢复工作的账本，优先相信它和 git 记录。
 
 ```markdown
-# SuperUI Decision Log
+# SuperUI Progress
 
-## [YYYY-MM-DD HH:mm] [short title]
+## [YYYY-MM-DD HH:mm] [stage/task]
 
-- Decision: [选择或变更了什么]
-- Evidence: [用户请求、文件、DESIGN.md 段落、测试输出、审核发现]
-- Alternatives: [拒绝了什么；无则写 none]
-- Impact: [影响的文件、阶段或用户可见行为]
-- Follow-up: [none / todo item / blocker]
+- Status: pending | in_progress | blocked | done
+- Artifacts: [paths created or updated]
+- Evidence: [test command, review result, source file, user decision]
+- Notes: [brief decision or blocker; omit if none]
+- Next: [next task]
 ```
 
-该文件用于记录可审计决策，不用于暴露隐藏推理。
+每个阶段完成时追加一条，不重写历史。条目要短，能让下一个 agent 知道“做到哪、证据在哪、下一步是什么”即可。
 
-## delivery-checklist.md
+## pipeline-status.md
+
+只记录当前阶段，不重复 `progress.md`：
 
 ```markdown
-# SuperUI Delivery Checklist
+# SuperUI Pipeline Status
 
-- [ ] Artifact root recorded
-- [ ] Required stage artifacts exist
-- [ ] DESIGN.md constraints are reflected or deviations recorded
-- [ ] Tests or manual validation evidence recorded
-- [ ] Responsive and accessibility checks addressed
-- [ ] Review findings resolved or explicitly deferred
-- [ ] Final user-facing summary prepared
+- Artifact root: `<ARTIFACT_ROOT>`
+- Current stage: [analysis/design/planning/plan-gate/tdd/code-gate/done]
+- Current task: [task name]
+- Next action: [one concrete action]
+- Blocked: yes/no
 ```
-
-没有足够证据时，不要勾选对应交付项，也不要声明该阶段完成。
 
 ## 交接规则
 
-- 只在进入 SuperUI、阶段切换、恢复任务或最终交付时读取本文件。
-- 启动子 skill 前，把对应任务标为 `in_progress`。
-- 子 skill 完成后，把任务标为 `done` 或 `blocked`，再更新 `pipeline-status.md`。
-- 如果其他 agent 已创建这些文件，保留原记录并追加更新。
-- 如果当前 agent 有原生 TodoWrite、plan、task list、memory 或 issue 工具，可镜像同一批任务；上述 Markdown 文件仍是便携交接基准。
+- 进入 SuperUI、阶段切换、恢复任务或最终交付时读取本文件。
+- 优先把 `todo.md` 镜像到当前 agent 的原生清单工具；没有原生工具时直接维护 `todo.md`。
+- 子 skill 完成后，勾选对应 todo，追加 `progress.md`，再更新 `pipeline-status.md`。
+- 不要把整份历史粘进新 agent 上下文；交接时只给当前任务、相关产物路径和 `progress.md` 最新条目。

@@ -48,7 +48,7 @@ SuperUI 把这些隐性工作显式化：先形成可复用产物，再进入实
 | ✅ | 制定测试计划 | `test-plan.md` |
 | ⚙️ | TDD 实现 UI | 代码、测试、`design-adjustments.md` |
 | 🧑‍⚖️ | 交叉审核 | `review/*.md`、`review/improvement-plan.md` |
-| 📋 | 兼容 agent 结构化清单 | `todo.md`、`decision-log.md`、`delivery-checklist.md`、`pipeline-status.md` |
+| 📋 | 兼容 agent 结构化清单 | `todo.md`、`progress.md`、`pipeline-status.md` |
 | 🧠 | 记住长期偏好 | `~/.superui/USER_PREFERENCES.md` 或项目本地偏好 |
 
 ## 🎯 能达到什么效果

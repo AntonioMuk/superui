@@ -14,7 +14,7 @@ description: "Use when the user explicitly mentions superui-tdd, $superui-tdd, f
 - **RESPONSIVE_RULES 是硬约束**：违反任何一条 MUST NOT 的代码必须重写，不存在"暂时这样后面再改"。
 - **偏离必须记录**：任何对 DESIGN.md 的偏离（无论多小），必须记录到 `design-adjustments.md`，说明原因和替代方案。
 - **产物路径统一**：测试、偏离记录和状态文件使用 SuperUI 传入的 `<ARTIFACT_ROOT>`；实现代码写入目标项目目录。
-- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。每个 RED/GREEN/REFACTOR 循环开始和结束都更新 `<ARTIFACT_ROOT>/todo.md`；实现取舍、偏离、测试结果和阻塞写入 `decision-log.md`、`delivery-checklist.md`、`pipeline-status.md`。
+- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。每个 RED/GREEN/REFACTOR 循环开始和结束都更新 `<ARTIFACT_ROOT>/todo.md`；实现取舍、偏离、测试结果和阻塞追加到 `progress.md`，并更新 `pipeline-status.md`。
 
 ## 流程速览
 
@@ -217,7 +217,7 @@ npx axe --stdout <page-url>   # axe-core 扫描
 | 实现代码 | `<target-project>/src/` |
 | 测试代码 | `<ARTIFACT_ROOT>/tests/` |
 | 偏离记录 | `<ARTIFACT_ROOT>/design-adjustments.md` |
-| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md`、`pipeline-status.md` |
+| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`progress.md`、`pipeline-status.md` |
 
 ## 工具依赖
 

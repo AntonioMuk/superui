@@ -13,7 +13,7 @@ description: "Use when the user explicitly mentions superui-source-analyzer, $su
 - **沿用总控路径**：必须使用 `superui` 传入的 `<ARTIFACT_ROOT>`，不得改写到其他输出目录。
 - **证据链**：每条结论必须附源码位置（文件路径+行号范围），不可凭空推测。
 - **优先级**：先扫描整体结构再深入细节，避免陷入某个组件而丢失全局视野。
-- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。开始分析前更新 `<ARTIFACT_ROOT>/todo.md`，关键证据和范围裁剪写入 `decision-log.md`，完成后更新 `delivery-checklist.md` 与 `pipeline-status.md`。
+- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。开始分析前更新 `<ARTIFACT_ROOT>/todo.md`，关键证据、范围裁剪和阻塞追加到 `progress.md`，完成后更新 `pipeline-status.md`。
 
 ## 流程速览
 
@@ -253,5 +253,5 @@ Step 4  样式分析 → style.md（可与 Step 2、3 并行）
 - `interaction.md`
 - `style.md`
 
-同时更新 `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md` 和 `pipeline-status.md`，用于跨 agent 交接。
+同时更新 `<ARTIFACT_ROOT>/todo.md`、`progress.md` 和 `pipeline-status.md`，用于跨 agent 交接。
 
