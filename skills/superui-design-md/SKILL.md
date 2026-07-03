@@ -16,6 +16,7 @@ description: "Use when the user explicitly mentions superui-design-md, $superui-
 - **产物写入** `<ARTIFACT_ROOT>/`：`DESIGN.md`、`preview.html`、`preview-dark.html`。
 - **偏好融合**：读取 SuperUI 传入的长期偏好和本次临时偏好。长期偏好是软约束；用户当前明确要求优先。
 - **lint 校验**：生成后尝试运行 `npx @google/design.md lint DESIGN.md` 做 WCAG 对比度和格式校验。工具不可用时跳过并标注。
+- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。开始前更新 `<ARTIFACT_ROOT>/todo.md`；设计情报、案例参照、外部工具采纳/拒绝和 lint 结果写入 `decision-log.md`；完成后更新 `delivery-checklist.md` 与 `pipeline-status.md`。
 
 ## 流程速览
 
@@ -195,6 +196,7 @@ npx @google/design.md lint DESIGN.md
 | DESIGN.md | `<ARTIFACT_ROOT>/DESIGN.md` | 设计规范主文件 |
 | preview.html | `<ARTIFACT_ROOT>/preview.html` | 亮色可视化预览 |
 | preview-dark.html | `<ARTIFACT_ROOT>/preview-dark.html` | 暗色可视化预览 |
+| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md`、`pipeline-status.md` | 跨 agent 交接状态 |
 
 ## 工具依赖
 

@@ -15,6 +15,7 @@ description: "Use when the user explicitly mentions superui-review, $superui-rev
 - **Chairman 不做新评审**：Chairman 只做汇聚、提问、裁决，不引入新的评审意见。
 - **最多 3 轮提问硬约束**：第三轮后强制终止。非核心分歧用默认值兜底由 Chairman 裁决；核心分歧写入 `review-conflicts.json` 提请人类决策。
 - **产物全量留痕**：所有审核意见、分歧、修复记录、裁决结果写入 `<ARTIFACT_ROOT>/review/`。
+- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。Gate 开始、发现阻塞、Chairman 裁决、修复建议和放行结论都必须同步到 `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md` 和 `pipeline-status.md`。
 
 ## 流程速览
 
@@ -276,6 +277,7 @@ rubric-locked.md 中有关键维度过但三份报告均未覆盖：[列出]
 | 分歧图谱 | `<ARTIFACT_ROOT>/review/divergence-map.md` |
 | 冲突升级 | `<ARTIFACT_ROOT>/review/review-conflicts.json`（如有核心冲突） |
 | 改进方案 | `<ARTIFACT_ROOT>/review/improvement-plan.md` |
+| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md`、`pipeline-status.md` |
 
 ## 工具依赖
 
@@ -285,4 +287,5 @@ rubric-locked.md 中有关键维度过但三份报告均未覆盖：[列出]
 - `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`：按需检查设计交付完整性
 - `skills/superui-shared/ENGINEERING_GATES.md`：按需检查工程原则和审核门禁
 - `skills/superui-shared/RESPONSIVE_RULES.md`：Code Gate 响应式检查
+- `skills/superui-shared/TASK_MANAGEMENT.md`：跨 agent 结构化清单和交付状态
 

@@ -48,6 +48,7 @@ SuperUI 把这些隐性工作显式化：先形成可复用产物，再进入实
 | ✅ | 制定测试计划 | `test-plan.md` |
 | ⚙️ | TDD 实现 UI | 代码、测试、`design-adjustments.md` |
 | 🧑‍⚖️ | 交叉审核 | `review/*.md`、`review/improvement-plan.md` |
+| 📋 | 兼容 agent 结构化清单 | `todo.md`、`decision-log.md`、`delivery-checklist.md`、`pipeline-status.md` |
 | 🧠 | 记住长期偏好 | `~/.superui/USER_PREFERENCES.md` 或项目本地偏好 |
 
 ## 🎯 能达到什么效果
@@ -61,6 +62,7 @@ SuperUI 追求的不是“生成一个看起来还行的页面”，而是让前
 - **可访问性可测**：检查键盘导航、focus、对比度、label、alt、语义结构。
 - **改造有证据**：先分析存量项目，再决定保留、替换、新增或移除。
 - **审核可收敛**：Plan Gate / Code Gate 使用锁定 rubric，最多三轮收敛，避免无休止争论。
+- **交接可继续**：统一输出 Markdown 结构化清单，方便 Codex、Claude、Cursor、OpenCode、Cline、Gemini、Windsurf 等 agent 接力。
 - **越用越贴合**：用户明确表达的长期偏好会沉淀为软约束。
 
 ## 🧩 Skill 结构
@@ -73,7 +75,7 @@ skills/
   superui-planner/            # 方案规划：改造/新建判别、proposal、specs、test-plan
   superui-tdd/                # TDD 实现：测试先行、token 约束、响应式落地
   superui-review/             # 交叉审核：Plan Gate、Code Gate、improvement-plan
-  superui-shared/             # 共享规则：路径策略、偏好、响应式、工程门禁、审核标准
+  superui-shared/             # 共享规则：路径策略、偏好、结构化清单、响应式、工程门禁、审核标准
 ```
 
 `superui` 是唯一总入口。它会按需读取共享文件，不会一次性把全部规则塞进上下文。

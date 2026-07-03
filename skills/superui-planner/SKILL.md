@@ -16,6 +16,7 @@ description: "Use when the user explicitly mentions superui-planner, $superui-pl
 - **设计交付完整性必须检查**：读取 `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`，确认网格、状态、响应式、组件、素材和错误页信息足够进入实现；缺失项回到 `superui-design-md` 补 DESIGN.md，或列为待确认，不由 planner 直接发明。
 - **产物写入** `<ARTIFACT_ROOT>/`。
 - **偏好只影响取舍，不覆盖证据**：长期偏好可影响技术栈、密度、组件库等选择；不得覆盖 DESIGN.md 和源码事实。
+- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。三探针、路径裁定、范围取舍、阻塞项和测试边界必须同步到 `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md` 和 `pipeline-status.md`。
 
 ## 流程速览
 
@@ -314,6 +315,7 @@ Step 4  生成 specs/*.md + test-plan.md
 | 设计方案 | `<ARTIFACT_ROOT>/design-proposal.md` | 仅全新 |
 | 行为规格 | `<ARTIFACT_ROOT>/specs/<component>.md` | 双路径 |
 | 测试计划 | `<ARTIFACT_ROOT>/test-plan.md` | 双路径 |
+| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`decision-log.md`、`delivery-checklist.md`、`pipeline-status.md` | 双路径 |
 
 ## 工具依赖
 
@@ -321,4 +323,5 @@ Step 4  生成 specs/*.md + test-plan.md
 - `superui-design-md`：DESIGN.md 不存在时触发生成
 - `skills/superui-shared/ENGINEERING_GATES.md`：方案、测试计划和审核门禁
 - `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`：设计交付完整性检查
+- `skills/superui-shared/TASK_MANAGEMENT.md`：跨 agent 结构化清单和交付状态
 
