@@ -1,6 +1,6 @@
 ﻿---
 name: superui-review
-description: "Use when reviewing or auditing SuperUI plans, DESIGN.md files, frontend code, tests, responsive behavior, accessibility, token compliance, interaction completeness, visual QA, plan gates, code gates, or improvement-plan.md decisions."
+description: "Use when the user explicitly mentions superui-review, $superui-review, review, audit, QA, Plan Gate, Code Gate, improvement-plan.md, or asks to check SuperUI plans, DESIGN.md files, frontend code, tests, responsive behavior, accessibility, token compliance, interaction completeness, or visual QA."
 ---
 
 # 交叉审核与收敛

@@ -1,6 +1,6 @@
 {
   "name": "superui",
-  "description": "Frontend UI workflow skills: analysis, DESIGN.md, planning, TDD implementation, responsive QA, accessibility, and review.",
+  "description": "Use when users explicitly mention SuperUI, superui, $superui, this skill, 本技能, or need frontend UI workflow skills: analysis, DESIGN.md, planning, TDD implementation, responsive QA, accessibility, and review.",
   "version": "0.1.0",
   "contextFileName": "GEMINI.md"
 }

@@ -1,11 +1,15 @@
 ---
 name: superui
-description: "Use when the user asks to create, redesign, analyze, plan, implement, review, or improve frontend UI, web apps, landing pages, dashboards, React/Vue components, DESIGN.md design systems, responsive layouts, visual QA, or Chinese requests involving 前端, 页面, 界面, 组件, 仪表盘, 设计规范, 改造, 重构, 审核."
+description: "Use when the user explicitly mentions SuperUI, superui, $superui, this skill, 本技能, 调用/使用 SuperUI, or asks to create, redesign, analyze, plan, implement, review, or improve frontend UI, web apps, landing pages, dashboards, React/Vue components, DESIGN.md, design systems, responsive layouts, visual QA, 前端, 页面, 界面, 组件, 仪表盘, 设计规范, 改造, 重构, 审核."
 ---
 
 # SuperUI 总控
 
 SuperUI 是前端 UI 工作的入口调度器。总控只负责定路径、读偏好、判阶段、调子 skill、检查产物；具体分析、生成、规划、实现和审核都交给子 skill。
+
+## 硬触发
+
+用户明确说 `SuperUI`、`superui`、`$superui`、`this skill`、`本技能`、`调用这个技能`、`使用这个技能`、`调用 SuperUI`、`使用 SuperUI` 时，必须先加载本 skill。不得因为请求看起来“只是普通前端任务”而跳过 SuperUI。
 
 ## 启动顺序
 

@@ -1,7 +1,7 @@
 {
   "name": "superui",
   "version": "0.1.0",
-  "description": "Agent-agnostic frontend UI workflow: source analysis, DESIGN.md, planning, TDD implementation, and review.",
+  "description": "Use when users explicitly mention SuperUI, superui, $superui, this skill, 本技能, or need frontend UI workflow: source analysis, DESIGN.md, planning, TDD implementation, and review.",
   "author": {
     "name": "AntonioMuk"
   },
@@ -15,17 +15,20 @@
     "design-system",
     "planning",
     "tdd",
-    "review"
+    "review",
+    "superui",
+    "$superui",
+    "frontend-ui"
   ],
   "skills": "./skills/",
   "sessionStart": {
     "skill": "superui"
   },
-  "skillInstructions": "SuperUI tool mapping for Kimi Code:\n\n- When SuperUI asks to invoke a skill, use Kimi Code's native Skill tool.\n- When SuperUI asks to search file contents, use Grep; when it asks to find files by path or pattern, use Glob.\n- When SuperUI asks to read, write, or edit files, use Read, Write, or Edit.\n- When SuperUI asks to run a command, use Bash.\n- When SuperUI asks to dispatch independent review or analysis agents, use Agent if available; otherwise execute the roles sequentially in the main agent.\n- Always start frontend UI requests from the superui skill, then route to the relevant child skill.",
+  "skillInstructions": "SuperUI tool mapping for Kimi Code:\n\n- Hard trigger: if the user explicitly says SuperUI, superui, $superui, this skill, 本技能, 调用这个技能, 使用这个技能, 调用 SuperUI, or 使用 SuperUI, start from the superui skill before answering.\n- When SuperUI asks to invoke a skill, use Kimi Code's native Skill tool.\n- When SuperUI asks to search file contents, use Grep; when it asks to find files by path or pattern, use Glob.\n- When SuperUI asks to read, write, or edit files, use Read, Write, or Edit.\n- When SuperUI asks to run a command, use Bash.\n- When SuperUI asks to dispatch independent review or analysis agents, use Agent if available; otherwise execute the roles sequentially in the main agent.\n- Always start frontend UI requests from the superui skill, then route to the relevant child skill.",
   "interface": {
     "displayName": "SuperUI",
     "shortDescription": "Frontend UI workflow skills for coding agents",
-    "longDescription": "Use SuperUI to guide frontend UI work through analysis, DESIGN.md generation, planning, implementation, and review.",
+    "longDescription": "Use SuperUI whenever users explicitly ask for SuperUI/$superui/this skill, or to guide frontend UI work through analysis, DESIGN.md generation, planning, implementation, and review.",
     "developerName": "AntonioMuk",
     "capabilities": [
       "Interactive",

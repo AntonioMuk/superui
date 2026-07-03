@@ -1,6 +1,6 @@
 ﻿---
 name: superui-design-md
-description: "Use when creating or updating a DESIGN.md design system, design tokens, UI style guide, visual language, component rules, responsive behavior, or light/dark HTML previews from source analysis, user descriptions, brand references, or SuperUI preferences."
+description: "Use when the user explicitly mentions superui-design-md, $superui-design-md, DESIGN.md, design tokens, design system, UI style guide, visual language, component rules, responsive behavior, light/dark HTML previews, or asks to create/update a frontend design specification from source analysis, user descriptions, brand references, or SuperUI preferences."
 ---
 
 # DESIGN.md 生成

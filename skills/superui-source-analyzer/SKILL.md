@@ -1,6 +1,6 @@
 ﻿---
 name: superui-source-analyzer
-description: "Use when analyzing an existing React, Vue, Next, Nuxt, Vite, or frontend project to extract routes, layout structure, responsive behavior, interaction loops, design tokens, colors, typography, component styling, or source evidence for DESIGN.md and SuperUI planning."
+description: "Use when the user explicitly mentions superui-source-analyzer, $superui-source-analyzer, source analysis, extract design system, analyze existing React/Vue/Next/Nuxt/Vite/frontend project, routes, layout structure, responsive behavior, interaction loops, design tokens, colors, typography, component styling, or evidence for DESIGN.md and SuperUI planning."
 ---
 
 # 前端源码分析

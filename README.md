@@ -100,6 +100,13 @@ SuperUI 的核心能力只维护在 `skills/` 中；不同 agent 生态只做薄
 
 ## 🚀 典型用法
 
+强触发句式：
+
+```text
+Use $superui for this frontend task.
+请调用 SuperUI / 使用本技能处理这个前端页面。
+```
+
 分析现有项目并提取设计系统：
 
 ```text

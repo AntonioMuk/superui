@@ -4,6 +4,12 @@ SuperUI 的核心原则是：**核心能力只维护一份 `skills/`，不同 ag
 
 这和 Superpowers 的做法类似：根目录保留通用入口文件，插件型平台提供自己的 manifest，CLI/IDE 型平台读取对应的规则文件或安装说明。
 
+## 强触发约定
+
+所有适配层都应把以下用户表达视为强触发，并先加载 `skills/superui/SKILL.md`：`SuperUI`、`superui`、`$superui`、`this skill`、`本技能`、`调用这个技能`、`使用这个技能`、`调用 SuperUI`、`使用 SuperUI`。
+
+不要在用户明确点名 SuperUI 时直接执行普通前端流程。
+
 ## 当前支持的入口
 
 | 生态 | 入口文件 | 作用 |

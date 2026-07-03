@@ -5,6 +5,8 @@ alwaysApply: false
 
 # SuperUI
 
+Hard trigger: if the user explicitly says `SuperUI`, `superui`, `$superui`, `this skill`, `本技能`, `调用这个技能`, `使用这个技能`, `调用 SuperUI`, or `使用 SuperUI`, read and follow `skills/superui/SKILL.md` before editing UI code.
+
 When a task involves frontend UI work, read and follow:
 
 ```text

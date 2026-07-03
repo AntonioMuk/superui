@@ -1,7 +1,7 @@
 {
   "name": "superui",
   "displayName": "SuperUI",
-  "description": "Frontend UI design, planning, TDD implementation, and review skills for agentic coding environments.",
+  "description": "Use when users explicitly mention SuperUI, superui, $superui, this skill, 本技能, or need frontend UI design, planning, TDD implementation, and review skills.",
   "version": "0.1.0",
   "author": {
     "name": "AntonioMuk"
@@ -15,7 +15,10 @@
     "skills",
     "DESIGN.md",
     "responsive",
-    "accessibility"
+    "accessibility",
+    "superui",
+    "$superui",
+    "frontend-ui"
   ],
   "skills": "./skills/"
 }

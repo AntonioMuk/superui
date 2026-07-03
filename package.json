@@ -1,7 +1,7 @@
 {
   "name": "superui",
   "version": "0.1.0",
-  "description": "Agent-agnostic frontend UI workflow skills for coding agents",
+  "description": "SuperUI frontend UI workflow skills for coding agents; use when users mention SuperUI, $superui, this skill, DESIGN.md, responsive UI, accessibility, TDD, or review",
   "type": "module",
   "main": ".opencode/plugins/superui.js",
   "keywords": [
@@ -14,7 +14,10 @@
     "responsive",
     "accessibility",
     "tdd",
-    "review"
+    "review",
+    "superui",
+    "$superui",
+    "frontend-ui"
   ],
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 ﻿---
 name: superui-planner
-description: "Use when planning frontend UI work from DESIGN.md: deciding redesign versus new build, producing proposal.md or design-proposal.md, writing behavior specs, test plans, component scope, implementation order, risk notes, or SuperUI handoff documents."
+description: "Use when the user explicitly mentions superui-planner, $superui-planner, frontend UI planning, proposal.md, design-proposal.md, specs, test-plan, component scope, implementation order, redesign versus new build decisions, risk notes, or SuperUI handoff documents from DESIGN.md."
 ---
 
 # 前端方案规划

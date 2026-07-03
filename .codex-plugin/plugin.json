@@ -1,7 +1,7 @@
 {
   "name": "superui",
   "version": "0.1.0",
-  "description": "Agent-agnostic frontend UI workflow skills: design analysis, DESIGN.md, planning, TDD implementation, responsive QA, accessibility, and review.",
+  "description": "Use when users explicitly mention SuperUI, superui, $superui, this skill, 本技能, or need frontend UI workflow skills: design analysis, DESIGN.md, planning, TDD implementation, responsive QA, accessibility, and review.",
   "author": {
     "name": "AntonioMuk",
     "url": "https://github.com/AntonioMuk"
@@ -17,13 +17,16 @@
     "responsive",
     "accessibility",
     "tdd",
-    "skills"
+      "skills",
+      "superui",
+      "$superui",
+      "frontend-ui"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "SuperUI",
     "shortDescription": "Frontend UI design, planning, implementation, and review",
-    "longDescription": "Use SuperUI to guide frontend UI work through source analysis, DESIGN.md generation, implementation planning, TDD, responsive and accessibility checks, and review gates.",
+    "longDescription": "Use SuperUI whenever users explicitly ask for SuperUI/$superui/this skill, or to guide frontend UI work through source analysis, DESIGN.md generation, implementation planning, TDD, responsive and accessibility checks, and review gates.",
     "developerName": "AntonioMuk",
     "category": "Coding",
     "capabilities": [
@@ -32,7 +35,7 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Use SuperUI to design and implement a frontend UI.",
+      "Use $superui to design and implement a frontend UI.",
       "Use SuperUI to analyze this project and generate a DESIGN.md."
     ],
     "websiteURL": "https://github.com/AntonioMuk/superui",

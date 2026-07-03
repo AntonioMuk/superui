@@ -1,6 +1,6 @@
 ﻿---
 name: superui-tdd
-description: "Use when implementing frontend UI code from DESIGN.md, proposal.md, specs, or test-plan.md with TDD, responsive constraints, visual contract tests, interaction tests, accessibility checks, token-based styling, and design-adjustments tracking."
+description: "Use when the user explicitly mentions superui-tdd, $superui-tdd, frontend UI implementation, TDD, tests first, responsive constraints, visual contract tests, interaction tests, accessibility checks, token-based styling, or implementing UI code from DESIGN.md, proposal.md, specs, or test-plan.md."
 ---
 
 # TDD 前端实现
