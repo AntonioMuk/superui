@@ -18,8 +18,12 @@
 
 SuperUI is an agent-agnostic skill set for frontend UI workflows. It is not a single prompt and it is not tied to one agent platform. It turns UI collaboration into a recoverable, auditable, continuously improving workflow:
 
-```text
-Analyze existing UI -> Generate DESIGN.md -> Plan specs and tests -> Implement with TDD -> Run Plan / Code Gates
+```mermaid
+flowchart LR
+  A[Analyze existing UI] --> B[Generate DESIGN.md]
+  B --> C[Plan specs and tests]
+  C --> D[Implement with TDD]
+  D --> E[Run Plan / Code Gates]
 ```
 
 It is designed for creating, refactoring, and reviewing websites, admin systems, dashboards, landing pages, React/Vue components, design systems, and responsive interfaces.
