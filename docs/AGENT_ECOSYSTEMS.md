@@ -1,104 +1,102 @@
-# SuperUI 多智能体生态兼容说明
+# SuperUI Agent Ecosystem Compatibility
 
-SuperUI 的核心原则是：**核心能力只维护一份 `skills/`，不同智能体生态只做薄适配层**。
+SuperUI follows one core principle: **the workflow lives once in `skills/`; each agent ecosystem only provides a thin adapter**.
 
-这种组织方式参考了 Superpowers：根目录保留通用入口文件；插件型平台提供自己的 manifest；CLI/IDE 型平台读取对应的规则文件或安装说明。
+This mirrors the Superpowers-style organization: root-level entry files guide generic agents, plugin-based platforms provide manifests, and CLI/IDE ecosystems read their own rule or install files.
 
-## 强触发约定
+## Hard Trigger Contract
 
-所有适配层都应把以下用户表达视为强触发，并先加载 `skills/superui/SKILL.md`：
+Every adapter should treat these user phrases as hard triggers and load `skills/superui/SKILL.md` first:
 
 ```text
 SuperUI
 superui
 $superui
 this skill
-本技能
-调用这个技能
-使用这个技能
-调用 SuperUI
-使用 SuperUI
+call SuperUI
+use SuperUI
+use this skill
 ```
 
-用户明确点名 SuperUI 时，不要直接进入普通前端流程，也不要跳过总控入口。
+When the user names SuperUI explicitly, do not jump directly into a generic frontend workflow and do not bypass the controller entry.
 
-## 当前支持的入口
+## Supported Entries
 
-| 生态 | 入口文件 | 作用 |
-|------|----------|------|
-| 通用智能体 / OpenAI Agents / Codex 风格 | `AGENTS.md` | 告诉智能体先读取 `skills/superui/SKILL.md` |
-| Claude / Claude Code | `CLAUDE.md`、`.claude-plugin/plugin.json` | Claude 项目指令和插件元数据 |
-| Codex App / Codex CLI | `.codex-plugin/plugin.json`、`AGENTS.md` | Codex 插件元数据和通用入口 |
-| Cursor | `.cursor-plugin/plugin.json`、`.cursor/rules/superui.mdc` | Cursor 插件元数据和项目规则 |
-| Gemini | `GEMINI.md`、`gemini-extension.json` | Gemini 上下文入口和扩展元数据 |
-| Kimi Code | `.kimi-plugin/plugin.json` | Kimi 插件元数据和工具映射提示 |
-| OpenCode | `.opencode/INSTALL.md`、`.opencode/plugins/superui.js` | OpenCode 安装说明、技能路径注册和 bootstrap 注入 |
-| Windsurf | `.windsurf/rules/superui.md` | Windsurf 项目规则 |
+| Ecosystem | Entry files | Role |
+|-----------|-------------|------|
+| Generic agents / OpenAI Agents / Codex-style agents | `AGENTS.md` | Tells the agent to load `skills/superui/SKILL.md` first |
+| Claude / Claude Code | `CLAUDE.md`, `.claude-plugin/plugin.json` | Claude project instruction and plugin metadata |
+| Codex App / Codex CLI | `.codex-plugin/plugin.json`, `AGENTS.md` | Codex plugin metadata and generic entry |
+| Cursor | `.cursor-plugin/plugin.json`, `.cursor/rules/superui.mdc` | Cursor plugin metadata and project rule |
+| Gemini | `GEMINI.md`, `gemini-extension.json` | Gemini context entry and extension metadata |
+| Kimi Code | `.kimi-plugin/plugin.json` | Kimi plugin metadata and tool mapping hint |
+| OpenCode | `.opencode/INSTALL.md`, `.opencode/plugins/superui.js` | Install notes, skill path registration, and bootstrap injection |
+| Windsurf | `.windsurf/rules/superui.md` | Windsurf project rule |
 
-## 适配层职责
+## Adapter Responsibilities
 
-适配层只做三件事：
+Adapters do only three things:
 
-1. 让对应平台发现 SuperUI。
-2. 把平台工具名称映射到 SuperUI 的通用动作。
-3. 引导智能体加载 `skills/superui/SKILL.md` 作为总控入口。
+1. Make SuperUI discoverable by the platform.
+2. Map platform-specific tool names to SuperUI's platform-neutral actions.
+3. Guide the agent to load `skills/superui/SKILL.md` as the controller entry.
 
-适配层不应该复制 SuperUI 的完整流程。流程只维护在 `skills/` 内，避免不同平台行为漂移。
+Adapters must not duplicate the full SuperUI workflow. Keep the workflow in `skills/` to avoid behavior drift across platforms.
 
-## 工具映射约定
+## Tool Mapping Convention
 
-SuperUI 正文尽量使用平台中立动作：
+SuperUI instructions use platform-neutral actions whenever possible:
 
-- 搜索文件：`rg` / 平台搜索工具
-- 读取文件：平台文件读取工具
-- 编辑文件：`apply_patch` / 平台编辑工具
-- 执行命令：shell / bash / terminal
-- 子智能体：平台支持时使用 subagent；不支持时由主智能体分角色顺序执行
-- skill 调用：平台原生 skill 工具；没有原生 skill 工具时，直接读取对应 `SKILL.md`
+- Search files: `rg` or the platform search tool.
+- Read files: the platform file-reading tool.
+- Edit files: `apply_patch` or the platform edit tool.
+- Run commands: shell, bash, terminal, or equivalent.
+- Subagents: use platform subagents when available; otherwise let the main agent run roles sequentially.
+- Skill invocation: use the platform native skill mechanism; if none exists, read the relevant `SKILL.md` directly.
 
-## 偏好记忆路径
+## Preference Memory Paths
 
-默认用户级偏好：
+Default user-level preference path:
 
 ```text
 ~/.superui/USER_PREFERENCES.md
 ```
 
-平台也可以使用自己的用户级目录，例如：
+Platform-specific user-level paths are also acceptable:
 
 ```text
 ~/.codex/superui/USER_PREFERENCES.md
 ~/.claude/superui/USER_PREFERENCES.md
 ```
 
-如果用户级目录不可写，不要写回仓库模板。应写入项目本地私有偏好：
+If user-level storage is unavailable, do not write back to repository templates. Use a project-local private preference file:
 
 ```text
 <target_project>/.superui/preferences.local.md
 ```
 
-仓库内偏好文件只作为只读模板：
+The repository preference file is a read-only template:
 
 ```text
 skills/superui-shared/USER_PREFERENCES.md
 ```
 
-## 新增生态的最低标准
+## Minimum Standard For New Ecosystems
 
-新增一个智能体生态时，至少补充：
+When adding a new agent ecosystem, include at least:
 
-1. 平台入口文件或插件 manifest。
-2. 平台安装说明。
-3. 工具名称映射说明。
-4. 一条最小验收测试：
+1. A platform entry file or plugin manifest.
+2. Platform install notes.
+3. Tool-name mapping notes.
+4. One minimal acceptance test:
 
 ```text
 Use SuperUI to create a DESIGN.md for a compact admin dashboard.
 ```
 
-通过标准：智能体应先加载 `superui` 总控，确定 `<ARTIFACT_ROOT>`，读取偏好，再路由到 `superui-design-md`，而不是直接写页面代码。
+Passing criteria: the agent loads the `superui` controller, determines `<ARTIFACT_ROOT>`, reads preferences, routes to `superui-design-md`, and does not jump straight into page implementation.
 
-当前兼容性状态见：
+Current compatibility status:
 
 ```text
 docs/COMPATIBILITY_MATRIX.md

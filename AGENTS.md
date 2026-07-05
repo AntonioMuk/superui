@@ -6,7 +6,7 @@ SuperUI is an agent-agnostic frontend UI workflow. If you are an AI coding agent
 skills/superui/SKILL.md
 ```
 
-Hard trigger: if the user explicitly says `SuperUI`, `superui`, `$superui`, `this skill`, `本技能`, `调用这个技能`, `使用这个技能`, `调用 SuperUI`, or `使用 SuperUI`, load `skills/superui/SKILL.md` before answering. Do not treat the request as optional.
+Hard trigger: if the user explicitly says `SuperUI`, `superui`, `$superui`, `this skill`, `use this skill`, `call SuperUI`, or `use SuperUI`, load `skills/superui/SKILL.md` before answering. Do not treat the request as optional.
 
 Use SuperUI for frontend UI design, redesign, analysis, planning, implementation, review, DESIGN.md work, responsive QA, accessibility checks, and design-system extraction.
 
