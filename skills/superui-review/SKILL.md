@@ -1,291 +1,147 @@
-﻿---
+---
 name: superui-review
 description: "Use when the user explicitly mentions superui-review, $superui-review, review, audit, QA, Plan Gate, Code Gate, improvement-plan.md, or asks to check SuperUI plans, DESIGN.md files, frontend code, tests, responsive behavior, accessibility, token compliance, interaction completeness, or visual QA."
 ---
 
-# 交叉审核与收敛
+# Cross Review And Convergence
 
-三个视角、一个主席、最多三轮。这不是找茬，是确保产物经得起三个不同性格的工程师盯。
+Run Plan Gate and Code Gate reviews through three independent perspectives and one Chairman. The goal is not to nitpick; it is to make frontend artifacts resilient, evidence-backed, and shippable.
 
-## 核心规则
+## Core Rules
 
-- **rubric-locked.md 全程锁定**：审核标准在审核启动时从 `skills/superui-shared/rubric-locked.md` 读取，全程不可修改。防止"审着审着标准变了"。
-- **共享标准按需加载**：始终读取 `rubric-locked.md`；其余共享文件按 Gate 和争议范围加载，避免把无关材料塞进上下文。
-- **SubAgent 隔离运行**：三个 SubAgent 各自独立审核，互不知晓彼此的结论。若当前环境支持 subagent，就并行派发；否则由主 agent 按三角色顺序独立完成，避免互相污染。
-- **Chairman 不做新评审**：Chairman 只做汇聚、提问、裁决，不引入新的评审意见。
-- **最多 3 轮提问硬约束**：第三轮后强制终止。非核心分歧用默认值兜底由 Chairman 裁决；核心分歧写入 `review-conflicts.json` 提请人类决策。
-- **产物全量留痕**：所有审核意见、分歧、修复记录、裁决结果写入 `<ARTIFACT_ROOT>/review/`。
-- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。Gate 开始、发现阻塞、Chairman 裁决、修复建议和放行结论都必须同步到 `<ARTIFACT_ROOT>/todo.md`、`progress.md` 和 `pipeline-status.md`。
+- Read `skills/superui-shared/rubric-locked.md` at review start and keep the rubric unchanged for the whole review.
+- Always load `rubric-locked.md`; load other shared files only when the gate or dispute requires them.
+- Run three isolated reviewers when subagents are available. If not, the main agent must perform the three roles separately and avoid cross-contamination.
+- The Chairman aggregates, asks questions, and decides. The Chairman must not introduce new review findings.
+- Stop after at most three question rounds. Non-core disagreements get a default Chairman decision; core conflicts go to `review-conflicts.json` for human decision.
+- Write all review reports, disagreements, repair notes, and decisions under `<ARTIFACT_ROOT>/review/`.
+- Read `skills/superui-shared/TASK_MANAGEMENT.md`; update `todo.md`, append gate evidence to `progress.md`, and update `pipeline-status.md`.
 
-## 流程速览
+## Gate Triggers
 
+| Gate | Trigger | Artifacts to review |
+|------|---------|---------------------|
+| Plan Gate | `proposal.md` or `design-proposal.md` exists | plan artifact + DESIGN.md |
+| Code Gate | implementation and tests are ready | code + tests + DESIGN.md + design-adjustments.md |
+
+Both gates use the same three-role plus Chairman process.
+
+## Load Standards
+
+| Condition | Load |
+|-----------|------|
+| Always | `rubric-locked.md` |
+| Plan Gate | `ENGINEERING_GATES.md`, `DESIGN_HANDOFF_CHECKLIST.md` |
+| Code Gate | `ENGINEERING_GATES.md`, `RESPONSIVE_RULES.md` |
+| Style, industry, trust, or anti-pattern disputes | `DESIGN_INTELLIGENCE.md` |
+| Delivery completeness, states, assets, or error pages | `DESIGN_HANDOFF_CHECKLIST.md` |
+
+Record briefly when an optional shared file is not loaded.
+
+## Reviewer Roles
+
+### Critic
+
+Focus on user requirements and product behavior.
+
+- Check whether user requirements are covered.
+- Check complete interaction loops: trigger -> validation -> request -> feedback -> state sync.
+- Check edge cases: empty, loading failure, permission, network timeout, extreme data.
+
+Output format:
+
+```text
+[location] | [requirement] | [gap/defect] | [severity: blocker/major/minor]
 ```
-Gate 触发 → Plan Gate 或 Code Gate？
-              ↓
-Step 1   加载 rubric-locked.md + 按需共享标准 + 待审产物
-              ↓
-Step 2   并行派发三个 SubAgent → 各自产出审核报告
-              ↓
-Step 3   Chairman 读取三份报告 → 构建分歧图谱
-              ↓
-Step 4   最多三轮提问收敛 → improvement-plan.md
-              ↓
-Step 5   执行修改 → 增量审核（可选）
+
+Do not review visual style, backend API design, or code style unless it blocks understanding.
+
+### Coordinator
+
+Focus on whether data can flow end to end.
+
+- Check frontend/backend API contract alignment.
+- Check error-code translation into user-readable messages.
+- Check CRUD flow from UI trigger to API call to response handling to UI update.
+
+Output format:
+
+```text
+[call site] | [backend expectation] | [missing link] | [fix]
 ```
 
----
+Do not review visual design, requirement validity, or code structure unless data flow breaks.
 
-## Gate 触发时机
+### Auditor
 
-此 skill 在两个 Gate 被触发：
+Focus on evidence and conformance.
 
-| Gate | 触发时机 | 待审产物 |
-|------|---------|---------|
-| Plan Gate | proposal.md 或 design-proposal.md 产出后 | 方案文档 + DESIGN.md |
-| Code Gate | TDD 实现 + 测试代码完成后 | 代码 + 测试 + DESIGN.md + design-adjustments.md |
+- Compare requirements, DESIGN.md, and produced artifacts.
+- Check token usage for color, spacing, typography, radius, and shadows.
+- Check loaded Design Intelligence, Design Handoff, and Engineering Gates when applicable.
 
-两个 Gate 使用相同的三角色 + Chairman 流程，仅待审产物不同。
+Output format:
 
----
+```text
+[file:line] | DESIGN.md: {value} | actual: {value} | drift: match/minor/major/blocker | fix
+```
 
-## Step 1：加载审核标准
+Do not review requirement validity or backend API design.
 
-先读取 `skills/superui-shared/rubric-locked.md`。然后按 Gate 和问题范围加载额外标准：
+## Chairman Process
 
-| 条件 | 额外读取 |
+1. Read the three reports.
+2. Build `divergence-map.md`:
+   - consensus findings
+   - single-reviewer findings
+   - conflicts
+   - rubric gaps
+3. Ask at most three rounds of follow-up questions.
+4. For non-core unresolved disagreements, decide using this priority:
+   - Auditor when DESIGN.md conformance is involved
+   - Coordinator when data flow is involved
+   - Critic when requirement coverage is involved
+   - stricter finding when priority is equal
+5. For core conflicts, write `review-conflicts.json` and pause for human decision.
+
+## improvement-plan.md
+
+Write:
+
+- consensus fixes
+- Chairman decisions
+- gap completion items
+- intentionally deferred items with reasons
+- rubric coverage
+- loaded Engineering Gate coverage
+- loaded Design Handoff coverage
+
+## Optional Fix Pass
+
+If asked to execute fixes:
+
+1. Apply consensus fixes and Chairman decisions.
+2. Run an incremental review over the diff only.
+3. Pass the gate only when blockers are resolved or explicitly escalated.
+
+## Output
+
+| File | Location |
 |------|----------|
-| Plan Gate | `ENGINEERING_GATES.md` + `DESIGN_HANDOFF_CHECKLIST.md` |
-| Code Gate | `ENGINEERING_GATES.md` + `RESPONSIVE_RULES.md` |
-| 风格、行业、信任等级、反模式争议 | `DESIGN_INTELLIGENCE.md` |
-| 交付完整性、状态、素材、错误页争议 | `DESIGN_HANDOFF_CHECKLIST.md` |
+| Critic report | `<ARTIFACT_ROOT>/review/critic-report.md` |
+| Coordinator report | `<ARTIFACT_ROOT>/review/coordinator-report.md` |
+| Auditor report | `<ARTIFACT_ROOT>/review/auditor-report.md` |
+| Divergence map | `<ARTIFACT_ROOT>/review/divergence-map.md` |
+| Escalated conflicts | `<ARTIFACT_ROOT>/review/review-conflicts.json` when needed |
+| Improvement plan | `<ARTIFACT_ROOT>/review/improvement-plan.md` |
+| Structured checklist | `<ARTIFACT_ROOT>/todo.md`, `progress.md`, `pipeline-status.md` |
 
-未加载的共享文件，在审核报告中用一句话记录原因，例如“未加载 DESIGN_INTELLIGENCE：本次只审核接口闭环”。如 `rubric-locked.md` 不存在，创建默认版本：
+## Tool Dependencies
 
-```markdown
-# rubric-locked.md（锁定审核标准，全程不可修改）
-
-## 通用标准
-- 所有交互行为必须有反馈（加载/成功/错误）
-- 所有颜色引用 DESIGN.md 定义的 token
-- 所有间距引用 DESIGN.md spacing token
-- 所有文本字号引用 DESIGN.md typography token
-
-## RESPONSIVE_RULES 遵守
-- 无 position:absolute 用于主布局
-- 无固定像素宽度容器
-- 容器使用 max-width + 百分比
-- 字号使用 clamp() 或 rem
-- 至少 3 个断点
-
-## WCAG 标准
-- 所有文本对比度 ≥ 4.5:1（正文）/ 3:1（大文本）
-- 所有可交互元素可键盘到达
-- 可见 focus 指示器
-
-## Design Intelligence
-- 产品类型、受众、密度、平台与 DESIGN.md 的风格方向一致
-- 高信任行业不得使用削弱信任的娱乐化风格
-- 明确记录 anti-patterns，并在代码/方案中规避
-
-## Engineering Gates
-- 证据确凿、最小范围、手术创伤、测试驱动、有效注释、奥卡姆剃刀、优先复用、最佳兼容均有证据
-
-## Design Handoff
-- 网格、颜色、字体、链接/导航、图片/图标、表单/按钮、响应式、组件、交付文件均明确到可实现程度
-- 404/500、empty、loading、error、modal/dialog 等非 happy path 状态不可缺失
-```
-
----
-
-## Step 2：并行派发三角色 SubAgent
-
-优先并行派发三个 SubAgent，各自携带以下 prompt 模板。若当前环境没有 subagent 工具，则分三次独立执行角色审查，每次只使用该角色允许关注的材料和输出格式。
-
-### 角色 A：批判者（Critic）
-
-```
-你是前端工程的资深批判者。你的默认立场是怀疑——只相信证据，不相信声称。
-
-## 关注焦点
-1. 用户实际需求是否被完整覆盖？逐一对照需求清单
-2. 交互闭环是否完整？（触发→校验→请求→反馈→同步），逐闭环检查
-3. 边界场景是否覆盖？空数据/加载失败/权限不足/网络超时/极端数据
-
-## 输出格式
-格式：`[问题位置] | [对应需求] | [缺失/缺陷描述] | [严重程度：🔴阻塞/🟠严重/🟡建议]`
-
-## 禁止越界
-- 不评论配色、字体选择、CSS 写法
-- 不评论后端接口设计
-- 不评论代码风格（除非影响可读性到阻塞理解）
-```
-
-### 角色 B：协调者（Coordinator）
-
-```
-你是前后端对接的务实工程师。你关心的只有一件事：数据能不能跑通。
-
-## 关注焦点
-1. 前后端接口契约是否对齐？API 端点、请求体、响应体是否与后端一致
-2. 错误码转译：后端错误码是否在前端有对应的用户可读提示
-3. 业务交互闭环：每个 CRUD 操作是否从前端触发 → API 调用 → 响应处理 → UI 同步形成完整链条
-
-## 输出格式
-格式：`[调用位置] | [后端接口要求] | [缺失环节] | [修复建议]`
-
-## 禁止越界
-- 不评论视觉设计、配色、排版
-- 不评论需求的合理性
-- 不评论代码结构（除非导致数据流断裂）
-```
-
-### 角色 C：标审者（Auditor）
-
-```
-你是严谨的质检员。你逐行比对，只认证据。
-
-## 关注焦点
-1. 需求文档 / DESIGN.md / 产出代码三者是否一致
-2. 实现是否脱离设计框架（颜色值是否匹配 token、间距是否匹配 spacing、字号是否匹配 typography）
-3. Token 引用是否合规（是否用 CSS 变量而非硬编码、Tailwind 是否引用设计 token 类名）
-4. 若已加载 Design Intelligence：检查产品类型、受众、密度、信任等级、反模式是否与实现一致
-5. 若已加载 Design Handoff：检查网格、状态、响应式、组件、素材、错误页和交付文件是否足够
-6. 若已加载 Engineering Gates：检查证据链、最小范围、复用、兼容性是否完整
-
-## 输出格式
-格式：`[文件:行号] | DESIGN.md 定义: {值} | 代码实际: {值} | 偏离等级: 🟢一致/🟡小偏/🟠中偏/🔴严重 | 修复建议`
-
-## 禁止越界
-- 不评论需求合理性
-- 不评论接口设计
-- 不评论代码架构（除非导致 token 引用不可行）
-```
-
----
-
-## Step 3：Chairman 构建分歧图谱
-
-Chairman 读取三份 SubAgent 审核报告，构建分歧图谱：
-
-```markdown
-# 分歧图谱
-
-## 共识项
-三份报告都指出的问题：[列出]
-
-## 独有见解
-仅一份报告提出的问题：[列出]
-
-## 冲突项
-两份以上报告互相矛盾的结论：[列出]
-
-## 缺口项
-rubric-locked.md 中有关键维度过但三份报告均未覆盖：[列出]
-```
-
----
-
-## Step 4：Chairman 最多三轮提问收敛
-
-### 提问优先级
-
-每轮提问的优先级：**冲突项 > 缺口项 > 独有见解**
-
-### 第 1 轮
-
-针对冲突项和缺口项，拟定向三个 SubAgent 的问题。**重新 spawn 三个 SubAgent**（携带上一轮的完整报告 + Chairman 问题 + 其他 SubAgent 的相关观点作为上下文），获取答复后更新分歧图谱。
-
-### 第 2 轮
-
-如仍有冲突项，再次提问。如冲突已解决，针对剩余缺口项和高风险独有见解提问。
-
-### 第 3 轮（强制终止轮）
-
-- 非核心分歧 → Chairman 使用默认值裁决，记录裁决理由。**默认值优先级：标审者意见（DESIGN.md 合规性优先） > 协调者意见（数据链路可跑通） > 批判者意见（需求覆盖）。同优先级时采纳更严格的一方。**
-- 核心分歧（影响用户核心需求、阻塞关键交互） → 写入 `review-conflicts.json` 提请人类决策
-
-```json
-{
-  "conflicts": [
-    {
-      "id": "C001",
-      "topic": "...",
-      "position_a": "...",
-      "position_b": "...",
-      "impact": "阻塞用户核心需求 X",
-      "chairman_recommendation": "...",
-      "awaiting_human_decision": true
-    }
-  ]
-}
-```
-
-### 收敛输出：improvement-plan.md
-
-```markdown
-# 改进方案
-
-## 共识改进项
-| 编号 | 问题描述 | 来源 | 改进措施 | 影响范围 |
-|------|---------|------|---------|---------|
-
-## 冲突裁决项
-| 编号 | 冲突描述 | 裁决结果 | 裁决理由 |
-|------|---------|---------|---------|
-
-## 缺口补全项
-| 编号 | rubric 要求 | 补全措施 |
-|------|-----------|---------|
-
-## 不修改项（含理由）
-| 编号 | 问题描述 | 不修改理由 |
-|------|---------|-----------|
-
-## Rubric 覆盖度
-- 总项数: N
-- 已覆盖: M
-- 未覆盖: K（附说明）
-
-## 已加载 Engineering Gates 覆盖度
-| Gate | 结论 | 证据/缺口 |
-|------|------|-----------|
-
-## 已加载 Design Handoff 覆盖度
-| Area | 结论 | 证据/缺口 |
-|------|------|-----------|
-```
-
----
-
-## Step 5：执行修改（可选）
-
-基于 improvement-plan.md：
-1. 对"共识改进项"和"冲突裁决项"执行修改
-2. 修改完成后可选择触发**增量审核**：仅审核 diff 范围，非全量重审
-3. 增量审核通过后 Gate 放行
-4. 如有人在类决策的核心冲突（review-conflicts.json），暂停等待人类裁决
-
----
-
-## 产物清单
-
-| 文件 | 位置 |
-|------|------|
-| 批判者报告 | `<ARTIFACT_ROOT>/review/critic-report.md` |
-| 协调者报告 | `<ARTIFACT_ROOT>/review/coordinator-report.md` |
-| 标审者报告 | `<ARTIFACT_ROOT>/review/auditor-report.md` |
-| 分歧图谱 | `<ARTIFACT_ROOT>/review/divergence-map.md` |
-| 冲突升级 | `<ARTIFACT_ROOT>/review/review-conflicts.json`（如有核心冲突） |
-| 改进方案 | `<ARTIFACT_ROOT>/review/improvement-plan.md` |
-| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`progress.md`、`pipeline-status.md` |
-
-## 工具依赖
-
-- subagent / multi-agent 工具（如可用）：并行派发三角色审查；不可用时降级为主 agent 分角色审查
-- `skills/superui-shared/rubric-locked.md`：锁定的审核标准
-- `skills/superui-shared/DESIGN_INTELLIGENCE.md`：按需检查设计情报、行业适配和反模式
-- `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`：按需检查设计交付完整性
-- `skills/superui-shared/ENGINEERING_GATES.md`：按需检查工程原则和审核门禁
-- `skills/superui-shared/RESPONSIVE_RULES.md`：Code Gate 响应式检查
-- `skills/superui-shared/TASK_MANAGEMENT.md`：跨 agent 结构化清单和交付状态
-
+- subagent or multi-agent tools when available
+- `skills/superui-shared/rubric-locked.md`
+- `skills/superui-shared/DESIGN_INTELLIGENCE.md`
+- `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`
+- `skills/superui-shared/ENGINEERING_GATES.md`
+- `skills/superui-shared/RESPONSIVE_RULES.md`
+- `skills/superui-shared/TASK_MANAGEMENT.md`

@@ -1,78 +1,65 @@
-﻿# rubric-locked.md — 锁定审核标准
+# rubric-locked.md - Locked Review Rubric
 
-本文档在审核启动时锁定，全程不可修改。审核方和 Chairman 均以此为准，防止标准漂移。
+Lock this file at review start. Reviewers and the Chairman must use it consistently for the whole review to avoid standard drift.
 
----
+## Design Consistency
 
-## 一、设计一致性
+| # | Check | Standard | Severity |
+|---|-------|----------|----------|
+| D1 | Color references | Colors use DESIGN.md tokens; no hardcoded hex values | Blocker |
+| D2 | Spacing references | Spacing uses DESIGN.md spacing tokens | Major |
+| D3 | Typography references | Font sizes use DESIGN.md typography tokens | Major |
+| D4 | Radius references | Radius uses DESIGN.md radius tokens | Minor |
+| D5 | Shadow references | Shadows use DESIGN.md shadow tokens | Minor |
 
-| # | 检查项 | 标准 | 严重度 |
-|---|--------|------|--------|
-| D1 | 颜色引用 | 所有颜色值必须引用 DESIGN.md 中定义的 token（CSS 变量或 Tailwind 设计 token 类名），不得硬编码 hex 值 | 🔴 |
-| D2 | 间距引用 | 所有间距必须引用 DESIGN.md spacing token，不得使用 token 之外的自定义值 | 🟠 |
-| D3 | 字号引用 | 所有文本字号必须引用 DESIGN.md typography token | 🟠 |
-| D4 | 圆角引用 | 所有圆角必须引用 DESIGN.md borderRadius token | 🟡 |
-| D5 | 阴影引用 | 所有阴影必须引用 DESIGN.md shadows token | 🟡 |
+## Responsive Compliance
 
----
+| # | Check | Standard | Severity |
+|---|-------|----------|----------|
+| R1 | No primary-layout absolute positioning | `position: absolute` is not used for primary layout containers | Blocker |
+| R2 | No fixed container width | Fixed pixel widths do not define containers | Blocker |
+| R3 | No fixed content height | Fixed heights do not truncate content flow | Blocker |
+| R4 | No responsive `!important` | `!important` is not used in media queries | Major |
+| R5 | Flexbox/Grid primary layout | Page layout uses Flexbox or CSS Grid | Blocker |
+| R6 | `max-width` plus percentage containers | Max-width containers use percentage width | Major |
+| R7 | `clamp()` or `rem` font sizes | Text scales safely | Major |
+| R8 | At least three breakpoints | `sm`, `md`, `lg` or equivalent exist | Blocker |
+| R9 | Responsive images | Images use `max-width: 100%` | Major |
+| R10 | Touch target size | Mobile interactive targets are at least 44x44px | Major |
 
-## 二、响应式合规（引用 RESPONSIVE_RULES.md）
+## Interaction Completeness
 
-| # | 检查项 | 标准 | 严重度 |
-|---|--------|------|--------|
-| R1 | 主布局无 absolute | 搜索 `position: absolute`，确认无用于主布局容器 | 🔴 |
-| R2 | 无固定像素宽度 | 搜索 `width: Npx`（N>0），确认非容器 | 🔴 |
-| R3 | 无固定像素高度 | 搜索 `height: Npx`，确认非截断内容流 | 🔴 |
-| R4 | 无 important 覆写 | 搜索 `!important`，确认不在媒体查询中 | 🟠 |
-| R5 | 主布局 Flexbox/Grid | 确认页面级布局使用 Flexbox 或 CSS Grid | 🔴 |
-| R6 | 容器 max-width+% | 确认最大宽度容器使用 max-width + 百分比 | 🟠 |
-| R7 | 字号 clamp/rem | 确认所有字号使用 clamp() 或 rem | 🟠 |
-| R8 | 至少 3 断点 | 确认定义了 sm/md/lg 三个断点 | 🔴 |
-| R9 | 图片响应式 | 确认图片有 max-width:100% | 🟠 |
-| R10 | 触控目标 ≥ 44px | 确认移动端可交互元素 ≥ 44×44px | 🟠 |
+| # | Check | Standard | Severity |
+|---|-------|----------|----------|
+| I1 | Loading states | Async operations show loading feedback | Blocker |
+| I2 | Success feedback | Mutations show success feedback or updated state | Blocker |
+| I3 | Error handling | API calls handle errors with user-readable feedback | Blocker |
+| I4 | CRUD loop | Business entities have complete create/read/update/delete loops when required | Blocker |
+| I5 | Form validation | Forms validate before submission and show errors | Major |
+| I6 | Duplicate action guard | Submit actions are disabled or guarded while pending | Major |
+| I7 | Empty state | Lists and tables define empty states | Minor |
 
----
+## Accessibility
 
-## 三、交互完整性
+| # | Check | Standard | Severity |
+|---|-------|----------|----------|
+| A1 | Contrast | Text contrast meets WCAG AA | Blocker |
+| A2 | Keyboard navigation | Interactive elements are reachable by keyboard | Blocker |
+| A3 | Focus indicator | Focusable elements have visible focus styles | Blocker |
+| A4 | Image alt text | Images have alt text or empty decorative alt | Major |
+| A5 | Form labels | Inputs have associated labels | Major |
+| A6 | ARIA | Custom controls have valid ARIA where needed | Minor |
 
-| # | 检查项 | 标准 | 严重度 |
-|---|--------|------|--------|
-| I1 | 加载态 | 每个异步操作有加载态反馈（Skeleton/Spinner/disabled） | 🔴 |
-| I2 | 成功反馈 | 每个写操作有成功反馈（Toast/Message/列表刷新） | 🔴 |
-| I3 | 错误处理 | 每个 API 调用有 try-catch 且错误有用户可读提示 | 🔴 |
-| I4 | CRUD 闭环 | 每个业务实体的增删改查形成完整闭环 | 🔴 |
-| I5 | 表单校验 | 表单提交前有前端校验，校验失败有明确提示 | 🟠 |
-| I6 | 操作防重 | 提交按钮在请求中 disabled，防止重复提交 | 🟠 |
-| I7 | 空状态 | 列表/表格空数据时有空状态提示 | 🟡 |
+## Code Quality
 
----
+| # | Check | Standard | Severity |
+|---|-------|----------|----------|
+| C1 | No debug logs | Production code has no debug `console.log` | Minor |
+| C2 | Text management | User-visible text is centralized or i18n-ready when the project requires it | Minor |
+| C3 | Type safety | TypeScript avoids unjustified `any` | Minor |
 
-## 四、可访问性
+## Severity
 
-| # | 检查项 | 标准 | 严重度 |
-|---|--------|------|--------|
-| A1 | 对比度 | 所有文本对比度 ≥ 4.5:1（正文）/ 3:1（大文本≥18px bold） | 🔴 |
-| A2 | 键盘导航 | 所有可交互元素可通过 Tab 到达 | 🔴 |
-| A3 | Focus 指示器 | 所有可聚焦元素有可见的 focus 样式 | 🔴 |
-| A4 | 图片 Alt | 所有 `<img>` 有 alt 属性（装饰性图片可用空 alt） | 🟠 |
-| A5 | 表单 Label | 所有表单输入有 `<label>` 关联 | 🟠 |
-| A6 | ARIA 合规 | 自定义交互组件有正确的 ARIA 属性 | 🟡 |
-
----
-
-## 五、代码质量
-
-| # | 检查项 | 标准 | 严重度 |
-|---|--------|------|--------|
-| C1 | 无 console.log | 生产代码中无调试用的 console.log | 🟡 |
-| C2 | 无硬编码字符串 | 用户可见文本不使用硬编码，提取为常量或 i18n | 🟡 |
-| C3 | 类型安全 | TypeScript 项目无 `any` 类型（有注释说明的除外） | 🟡 |
-
----
-
-## 严重度说明
-
-- 🔴 阻塞：必须修复才能通过 Gate
-- 🟠 严重：应该修复，在有合理理由时可记录到 design-adjustments.md 后放行
-- 🟡 建议：最好修复，可记录后放行
-
+- Blocker: must be fixed before the gate passes.
+- Major: should be fixed; may pass only with a recorded justification.
+- Minor: recommended; may pass with notes.

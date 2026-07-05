@@ -1,327 +1,128 @@
-﻿---
+---
 name: superui-planner
 description: "Use when the user explicitly mentions superui-planner, $superui-planner, frontend UI planning, proposal.md, design-proposal.md, specs, test-plan, component scope, implementation order, redesign versus new build decisions, risk notes, or SuperUI handoff documents from DESIGN.md."
 ---
 
-# 前端方案规划
+# Frontend Planning
 
-在动工之前，先判路径、做分析、出方案。此 skill 的核心价值是"做对的选择"——到底是改造存量还是全新设计，不是拍脑袋决定，而是三根探针探出来的。
+Plan frontend UI work before implementation. This skill decides whether to refactor an existing project or build a new UI, then produces implementation and test artifacts.
 
-## 核心规则
+## Core Rules
 
-- **三探针结论不可被用户偏好覆盖**：探针 1、2 是客观判定，探针 3 是主观参考。冲突时以探针 1、2 为准。
-- **所有判别过程留痕**：输出判别报告，记录每根探针的判断依据和结论。
-- **DESIGN.md 是唯一真相源**：方案中的所有设计决策必须引用 DESIGN.md 中的 token 或规则。不可凭空创造新的设计参数。
-- **工程门禁必须入案**：读取 `skills/superui-shared/ENGINEERING_GATES.md`，在方案和测试计划中加入 SuperUI Engineering Gates 自查表；门禁只检查证据、范围、测试、复用和兼容，不新增设计参数。
-- **设计交付完整性必须检查**：读取 `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`，确认网格、状态、响应式、组件、素材和错误页信息足够进入实现；缺失项回到 `superui-design-md` 补 DESIGN.md，或列为待确认，不由 planner 直接发明。
-- **产物写入** `<ARTIFACT_ROOT>/`。
-- **偏好只影响取舍，不覆盖证据**：长期偏好可影响技术栈、密度、组件库等选择；不得覆盖 DESIGN.md 和源码事实。
-- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。三探针、路径裁定、范围取舍、阻塞项和测试边界必须同步到 `<ARTIFACT_ROOT>/todo.md`、`progress.md` 和 `pipeline-status.md`。
+- The three-probe decision cannot be overridden by preference. Probes 1 and 2 are objective; probe 3 is contextual.
+- Record all path decisions in `determination-report.md`.
+- `DESIGN.md` is the only design truth source. Plans must cite DESIGN.md tokens or rules and must not invent new design values.
+- Read `skills/superui-shared/ENGINEERING_GATES.md` and include the checklist in plans and test plans.
+- Read `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`; if design handoff is incomplete, return to `superui-design-md` or mark items as pending.
+- Write artifacts to `<ARTIFACT_ROOT>/`.
+- Preferences may shape tradeoffs, stack choices, density, and component library choices, but cannot override source evidence or DESIGN.md.
+- Read `skills/superui-shared/TASK_MANAGEMENT.md`; update `todo.md`, append planning evidence to `progress.md`, and update `pipeline-status.md`.
 
-## 流程速览
+## Inputs
 
-```
-Step 1  输入加载 → 读取 DESIGN.md + 目标项目信息
-Step 2  三探针判别 → 判别报告
-Step 3  双轨分流
-         ├─ 改造路径 → 相似性分析 → proposal.md
-         └─ 全新路径 → 需求澄清 → design-proposal.md
-Step 4  生成 specs/*.md + test-plan.md
-```
+- `<ARTIFACT_ROOT>/DESIGN.md`; if missing, route to `superui-design-md`.
+- Target project directory.
+  - Existing-project path: source directory to refactor.
+  - New-build path: directory where the new project will be created.
 
----
+## Workflow
 
-## Step 1：输入加载
+1. Load DESIGN.md and target project information.
+2. Run the three probes.
+3. Choose the refactor path or new-build path.
+4. Produce proposal, specs, and test plan.
 
-必须获取以下输入：
+## Three Probes
 
-1. **DESIGN.md**：来自 `<ARTIFACT_ROOT>/DESIGN.md`（`superui-design-md` 的产物）。如不存在，先调用 `superui-design-md` 生成。
-2. **目标项目目录**：用户指定的目标项目路径。
-   - 改造路径：这是存量项目的源码目录
-   - 全新路径：这是新项目将创建的目录（此时为空）
+### Probe 1: Source Existence
 
----
+Scan the target directory:
 
-## Step 2：三探针判别
+- Frontend config such as `package.json`, `vite.config.*`, `next.config.*`, or `vue.config.*` means existing-project evidence.
+- `src/`, `app/`, `.vue`, `.tsx`, or `.jsx` source files mean existing-project evidence.
+- Empty directories or no frontend markers mean new-build evidence.
 
-按顺序执行三根探针，任一探针满足条件即记录。执行完三根后综合裁定。
+### Probe 2: Refactor Feasibility
 
-### 探针 1：源码存在性（客观）
+Run only when Probe 1 suggests an existing project.
 
-扫描目标项目目录：
-- 存在 `package.json` / `vite.config.*` / `next.config.*` / `vue.config.*` 等工程配置文件 → **改造路径标记**
-- 存在 `src/` 或 `app/` 目录且含 `.vue` / `.tsx` / `.jsx` 文件 → **改造路径标记**
-- 目录为空或无任何前端工程特征 → **全新路径标记**
+| Check | Threshold | Result |
+|-------|-----------|--------|
+| Source size | Fewer than 5 component files | Refactor may not be meaningful |
+| Stack compatibility | Not Vue or React | Unsupported; prefer new-build planning |
+| Styling evidence | Only inline styles or no structured styling | No reliable design extraction; prefer new build |
 
-判断方法：用 `rg --files <目标目录>` 或目录列表查找 `package.json`、`vite.config.*`、`next.config.*`、`vue.config.*`、`.vue`、`.tsx`、`.jsx`。
+If any check forces fallback, choose the new-build path and explain why.
 
-### 探针 2：可改造性评估（客观，仅在探针 1 判定为改造时执行）
+### Probe 3: User Intent
 
-对存量项目做快速评估：
+Use intent keywords as contextual evidence only:
 
-| 评估项 | 阈值 | 判定 |
-|--------|------|------|
-| 源码文件数 | < 5 个组件文件 | 代码量过小，改造意义不大 |
-| 技术栈兼容性 | 非 Vue/React | 必须支持 Vue/React，其他栈不支持 |
-| 样式方案冲突 | 全部行内样式/无任何结构化样式 | 无可提取的设计信息，回退全新 |
+| Refactor intent | New-build intent |
+|-----------------|------------------|
+| refactor, optimize, redesign, migrate, upgrade, align | create, build, design, from scratch, new, blank |
 
-如果探针 2 任一评估项触发"回退全新" → 覆盖探针 1 结果，走全新路径。在判别报告中说明原因。
+If user intent conflicts with Probes 1 and 2, trust Probes 1 and 2 and explain the mismatch.
 
-### 探针 3：用户意图对齐（主观参考）
+## determination-report.md
 
-解析用户描述中的关键词：
+Write:
 
-| 关键词指向改造 | 关键词指向全新 |
-|---------------|---------------|
-| 重构、优化、改造、迁移、升级、对齐 | 新建、创建、设计、从零、全新、空白 |
+- Probe 1 result and evidence.
+- Probe 2 result and evidence when applicable.
+- Probe 3 intent and mismatch notes.
+- Final path: existing-project refactor or new build.
+- Rationale.
 
-- 探针 3 与探针 1/2 一致时：加强置信度
-- 探针 3 与探针 1/2 冲突时：以探针 1、2 为准，在判别报告中向用户说明冲突原因
+## Refactor Path Outputs
 
-### 判别报告输出
+Produce:
 
-```markdown
-# 双轨判别报告
+- `similarity-report.md`: compare DESIGN.md with current layout, interaction, and styling.
+- `proposal.md`: goals, unchanged scope, changed scope, additions, removals, sequence, risks, rollback, Engineering Gates, Design Handoff Checklist.
 
-## 探针 1：源码存在性
-- 结果: [改造/全新]
-- 依据: [具体文件/目录情况]
+Reuse existing `analysis/` artifacts when present instead of re-running source analysis.
 
-## 探针 2：可改造性评估（如适用）
-- 源文件数: [N 个] → [通过/不通过]
-- 技术栈: [Vue 3 / React 18 / 其他] → [兼容/不兼容]
-- 样式方案: [描述] → [可提取/不可提取]
-- 综合: [继续改造/回退全新]
+## New-Build Path Outputs
 
-## 探针 3：用户意图
-- 检测关键词: [...]
-- 指向: [改造/全新]
-- 与探针 1/2 一致性: [一致/冲突]
+Produce:
 
-## 最终裁定
-- 路径: **改造路径** / **全新路径**
-- 理由: [综合三探针的判断逻辑]
-```
+- `requirements-clarification.md`: pages, core interactions, design requirements, pending questions.
+- `design-proposal.md`: stack, directory structure, routing, token landing plan, component tree, page assembly, development order, Engineering Gates, Design Handoff Checklist.
 
-写入 `<ARTIFACT_ROOT>/determination-report.md`。
+## specs/*.md
 
----
+Create behavior specs for page-level components, core DESIGN.md components, and user-specified custom components. Use GIVEN/WHEN/THEN. Use `SHALL` for required behavior and `SHOULD` for recommended behavior.
 
-## Step 3：双轨分流
+## test-plan.md
 
-### 3A：改造路径
+Cover:
 
-#### 3A.1 相似性分析
+- visual contract tests
+- interaction behavior tests
+- accessibility checks
+- responsive breakpoints
+- SuperUI Engineering Gates
 
-对比 DESIGN.md 与目标项目的当前状态：
-
-1. 用 `superui-source-analyzer` 分析目标项目。**先检查 `<ARTIFACT_ROOT>/analysis/` 是否已存在**——如全链路中已从 ① 走来，分析报告已存在则直接读取，跳过重复分析。
-2. 逐维度对比：
-
-```markdown
-# 相似性分析
-
-## 布局维度
-| 方面 | DESIGN.md 定义 | 目标项目现状 | 偏差等级 | 改造建议 |
-|------|---------------|-------------|---------|---------|
-| 栅格系统 | 12列，32px gutter | 24列，16px gutter | 🔴 大 | 重构栅格 |
-| ... | ... | ... | ... | ... |
-
-## 交互维度
-| 闭环 | DESIGN.md 要求 | 目标项目现状 | 偏差等级 | 改造建议 |
-|------|---------------|-------------|---------|---------|
-
-## 样式维度
-| Token | DESIGN.md 值 | 目标项目值 | 偏差等级 | 改造建议 |
-|-------|-------------|-----------|---------|---------|
-```
-
-偏差等级：🟢 一致 / 🟡 小偏差（可保留） / 🟠 中偏差（需改造） / 🔴 大偏差（需重写）
-
-#### 3A.2 生成 proposal.md
-
-```markdown
-# 改造方案
-
-## 改造目标
-[引用 DESIGN.md 的核心设计意图]
-
-## 改造范围
-### 保持不变
-- [列出与 DESIGN.md 一致的组件/页面]
-
-### 需要改造
-| 组件/页面 | 当前状态 | 目标状态 | 改造方式 | 预估工作量 |
-|----------|---------|---------|---------|-----------|
-
-### 需要新增
-| 组件/页面 | 设计依据（DESIGN.md 段落） | 位置 |
-
-### 需要移除
-| 组件/页面 | 移除原因 |
-
-## 改造顺序
-1. 第一阶段：全局样式层（主题变量、排版、间距）
-2. 第二阶段：基础组件（按钮、输入框、卡片）
-3. 第三阶段：布局组件（导航、页脚、侧栏）
-4. 第四阶段：页面级改造
-
-## 风险与回退策略
-- [每条改造的风险点和回退方案]
-
-## SuperUI Engineering Gates
-[按 ENGINEERING_GATES.md 填写 8 项自查表；不得新增 DESIGN.md 外的设计参数]
-
-## Design Handoff Checklist
-[按 DESIGN_HANDOFF_CHECKLIST.md 确认设计交付是否足够实现；缺项回写 DESIGN.md 或列为待确认]
-```
-
-### 3B：全新路径
-
-#### 3B.1 需求澄清
-
-基于 DESIGN.md 和用户描述，生成需求澄清文档：
-
-```markdown
-# 需求澄清
-
-## 功能需求
-- 页面清单：[列出所有需要创建的页面]
-- 核心交互：[列出所有 CRUD 闭环]
-
-## 设计需求（引用 DESIGN.md）
-- 布局：[引用 Layout 段]
-- 组件：[引用 Components 段]
-- 交互：[引用 Interaction Loop 段]
-
-## 待确认项
-- [需要用户确认的不明确点]
-```
-
-#### 3B.2 生成 design-proposal.md
-
-```markdown
-# 全新设计方案
-
-## 项目架构
-- 技术栈选型：[React 18 / Vue 3 + Vite + TypeScript + ...]
-- 目录结构设计
-- 路由设计
-
-## 设计落地计划
-### 全局层
-- [CSS 变量定义]
-- [排版基础]
-- [间距与栅格]
-
-### 组件树
-- [从 DESIGN.md Components 段展开，列出所有组件及其层级]
-
-### 页面装配
-- [每个页面的组件组合方案]
-
-## 开发顺序
-1. 全局样式 + 设计 token
-2. 基础组件（原子组件）
-3. 复合组件（分子组件）
-4. 页面装配
-5. 交互闭环联调
-
-## SuperUI Engineering Gates
-[按 ENGINEERING_GATES.md 填写 8 项自查表；不得新增 DESIGN.md 外的设计参数]
-
-## Design Handoff Checklist
-[按 DESIGN_HANDOFF_CHECKLIST.md 确认设计交付是否足够实现；缺项回写 DESIGN.md 或列为待确认]
-```
-
----
-
-## Step 4：生成规格与测试计划
-
-无论哪条路径，统一产出：
-
-### specs/*.md（行为规格）
-
-每个页面/组件一个 spec 文件，使用 GIVEN/WHEN/THEN 格式：
-
-**生成范围**：仅以下三类组件生成 spec——① 所有页面级组件 ② DESIGN.md Components 段中定义的核心组件 ③ 用户额外指定的自定义组件。叶子展示组件不生成 spec。
-
-```markdown
-# [组件名] 行为规格
-
-## 渲染规格
-- GIVEN 组件接收 props X
-- WHEN 渲染完成
-- THEN SHALL 显示 [期望的 UI]
-
-## 交互规格
-- GIVEN 用户点击 [按钮]
-- WHEN 表单未填写
-- THEN SHALL 显示校验错误
-
-## 响应式规格
-- GIVEN 视口宽度 < [断点]
-- WHEN 页面渲染
-- THEN SHALL [布局变化描述]
-
-## 可访问性规格
-- GIVEN 用户使用键盘导航
-- WHEN Tab 键聚焦到 [元素]
-- THEN SHALL 显示可见的 focus 指示器
-```
-
-`THEN` 中使用 `SHALL` 标记强制行为，`SHOULD` 标记推荐行为。
-
-### test-plan.md
-
-```markdown
-# 测试计划
-
-## 视觉契约测试
-| 测试项 | 对比基准 | 允许偏差 |
-|--------|---------|---------|
-| [组件] 配色 | DESIGN.md colors | 色差 ≤ 2% |
-| [组件] 尺寸 | DESIGN.md typography/spacing | ≤ 2px |
-
-## 交互行为测试
-| 测试项 | 测试场景 | 预期行为 |
-|--------|---------|---------|
-| [CRUD] 新增 | 填写表单→提交 | Toast提示+列表刷新 |
-
-## 可访问性测试
-| 测试项 | 工具 | 标准 |
-|--------|------|------|
-| WCAG 违规扫描 | axe-core | 0 违规 |
-| 键盘导航完整性 | Playwright | 所有可交互元素可 Tab 到达 |
-
-## 响应式测试
-| 断点 | 测试页面 | 验证点 |
-|------|---------|--------|
-
-## SuperUI Engineering Gates
-[按 ENGINEERING_GATES.md 填写 8 项自查表；任一 ❌ 必须说明阻塞原因]
-```
-
----
-
-## 产物清单
-
-| 文件 | 位置 | 路径相关 |
-|------|------|---------|
-| 判别报告 | `<ARTIFACT_ROOT>/determination-report.md` | 双路径 |
-| 相似性分析 | `<ARTIFACT_ROOT>/similarity-report.md` | 仅改造 |
-| 改造方案 | `<ARTIFACT_ROOT>/proposal.md` | 仅改造 |
-| 需求澄清 | `<ARTIFACT_ROOT>/requirements-clarification.md` | 仅全新 |
-| 设计方案 | `<ARTIFACT_ROOT>/design-proposal.md` | 仅全新 |
-| 行为规格 | `<ARTIFACT_ROOT>/specs/<component>.md` | 双路径 |
-| 测试计划 | `<ARTIFACT_ROOT>/test-plan.md` | 双路径 |
-| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`progress.md`、`pipeline-status.md` | 双路径 |
-
-## 工具依赖
-
-- `superui-source-analyzer`：存量项目分析（改造路径使用）
-- `superui-design-md`：DESIGN.md 不存在时触发生成
-- `skills/superui-shared/ENGINEERING_GATES.md`：方案、测试计划和审核门禁
-- `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`：设计交付完整性检查
-- `skills/superui-shared/TASK_MANAGEMENT.md`：跨 agent 结构化清单和交付状态
-
+## Output
+
+Write:
+
+- `<ARTIFACT_ROOT>/determination-report.md`
+- `<ARTIFACT_ROOT>/similarity-report.md` for refactors
+- `<ARTIFACT_ROOT>/proposal.md` for refactors
+- `<ARTIFACT_ROOT>/requirements-clarification.md` for new builds
+- `<ARTIFACT_ROOT>/design-proposal.md` for new builds
+- `<ARTIFACT_ROOT>/specs/*.md`
+- `<ARTIFACT_ROOT>/test-plan.md`
+- `<ARTIFACT_ROOT>/todo.md`
+- `<ARTIFACT_ROOT>/progress.md`
+- `<ARTIFACT_ROOT>/pipeline-status.md`
+
+## Tool Dependencies
+
+- `superui-source-analyzer` for existing-project analysis.
+- `superui-design-md` when DESIGN.md is missing or incomplete.
+- `skills/superui-shared/ENGINEERING_GATES.md`.
+- `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`.
+- `skills/superui-shared/TASK_MANAGEMENT.md`.

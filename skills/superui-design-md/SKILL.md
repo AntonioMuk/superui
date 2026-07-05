@@ -1,208 +1,84 @@
-﻿---
+---
 name: superui-design-md
 description: "Use when the user explicitly mentions superui-design-md, $superui-design-md, DESIGN.md, design tokens, design system, UI style guide, visual language, component rules, responsive behavior, light/dark HTML previews, or asks to create/update a frontend design specification from source analysis, user descriptions, brand references, or SuperUI preferences."
 ---
 
-# DESIGN.md 生成
+# DESIGN.md Generator
 
-将设计意图转化为一份 AI 能精确执行的设计规范文件。
+Convert design intent, source evidence, and user preferences into an AI-executable `DESIGN.md` plus preview files.
 
-## 核心规则
+## Core Rules
 
-- **格式严格遵循 Google Stitch DESIGN.md 规范**：双层结构——YAML 前言层（机器可读 token）+ Markdown 正文层（人类可读设计理由）。
-- **案例按需**：只有当用户描述、行业、品牌或风格需要校准时，才从 `examples/design-md/` 选择少量案例；不得整库加载。
-- **设计情报先行**：生成 token 前读取 `skills/superui-shared/DESIGN_INTELLIGENCE.md`，先判定产品类型、受众、密度、信任等级、平台和反模式。
-- **交互闭环扩展**：Google 原版缺少交互描述，此 skill 强制增加「Interaction Loop」段，覆盖 CRUD 闭环、反馈机制、操作依赖。
-- **产物写入** `<ARTIFACT_ROOT>/`：`DESIGN.md`、`preview.html`、`preview-dark.html`。
-- **偏好融合**：读取 SuperUI 传入的长期偏好和本次临时偏好。长期偏好是软约束；用户当前明确要求优先。
-- **lint 校验**：生成后尝试运行 `npx @google/design.md lint DESIGN.md` 做 WCAG 对比度和格式校验。工具不可用时跳过并标注。
-- **结构化清单同步**：读取 `skills/superui-shared/TASK_MANAGEMENT.md`。开始前更新 `<ARTIFACT_ROOT>/todo.md`；设计情报、案例参照、外部工具采纳/拒绝和 lint 结果追加到 `progress.md`；完成后更新 `pipeline-status.md`。
+- Follow the Google Stitch-style `DESIGN.md` structure: machine-readable YAML token frontmatter plus human-readable Markdown rationale.
+- Read `skills/superui-shared/DESIGN_INTELLIGENCE.md` before creating tokens.
+- Add an `Interaction Loop` section covering CRUD loops, feedback, operation dependencies, and error handling.
+- Write artifacts to `<ARTIFACT_ROOT>/`: `DESIGN.md`, `preview.html`, and `preview-dark.html`.
+- Treat long-term preferences as soft constraints; current explicit user instructions take priority.
+- Try `npx @google/design.md lint DESIGN.md`; if unavailable, continue and record the skipped lint.
+- Read `skills/superui-shared/TASK_MANAGEMENT.md`; update `todo.md`, append design decisions and lint evidence to `progress.md`, and update `pipeline-status.md`.
 
-## 流程速览
+## Workflow
 
-```
-Step 1  输入源加载 → 是分析报告还是用户描述？
-Step 2  设计情报 → 产品/受众/密度/信任/反模式
-Step 3  案例参照 → 按需选择 1-2 个风格参考
-Step 4  生成 DESIGN.md → 按模板填充
-Step 5  生成预览 HTML → 双色预览
-Step 6  Lint 校验 → @google/design.md CLI
-```
+1. Load input source:
+   - If analysis exists, read `analysis/layout.md`, `analysis/interaction.md`, and `analysis/style.md`.
+   - If the user gave a direct description, extract style, layout, color, and interaction requirements.
+2. Run design intelligence:
+   - Determine product type, audience, primary job, density, trust level, platform, brand posture, and anti-patterns.
+   - When under-specified, check for local `ui-ux-pro-max-skill` and use it as optional advisory input only.
+3. Select examples only when needed:
+   - Use `rg --files examples/design-md` or example READMEs to find candidates.
+   - Read at most 1-2 relevant examples and only relevant sections.
+   - Extract structure and expression patterns; never copy brand values or assets.
+4. Generate `DESIGN.md` using `templates/DESIGN.md.template.md`.
+5. Generate `preview.html` and `preview-dark.html`.
+6. Run or skip lint and record evidence.
 
----
+## DESIGN.md Requirements
 
-## Step 1：输入源加载
+YAML token frontmatter must include:
 
-判断输入源类型：
+- colors: primary, functional colors, and at least 8 neutral steps
+- typography: display, title, body, and caption levels with fallback fonts
+- spacing: 4px-based scale from small to large
+- borderRadius: none, sm, md, lg, xl, full
+- shadows: sm, md, lg, xl
+- breakpoints: at least sm, md, lg, xl, 2xl
 
-**情况 A：有分析报告**（来自 `superui-source-analyzer`）
-- 读取 `<ARTIFACT_ROOT>/analysis/layout.md`
-- 读取 `<ARTIFACT_ROOT>/analysis/interaction.md`
-- 读取 `<ARTIFACT_ROOT>/analysis/style.md`
-- 综合分析报告中的结构，提取可量化的设计 token
+Markdown body must include:
 
-**情况 B：用户直接描述**（无源码参考）
-- 解析用户描述中的关键词：风格方向、配色偏好、布局要求、交互需求
-- 如描述不完整，主动追问缺失维度后再生成
+1. Overview
+2. Design Intelligence
+3. Colors
+4. Typography
+5. Layout
+6. Elevation & Depth
+7. Shapes
+8. Components
+9. Interaction Loop
+10. Do's and Don'ts
+11. Responsive Behavior
+12. Agent Prompt Guidelines
+13. Design Handoff Checklist
 
----
+## Previews
 
-## Step 2：设计情报
+`preview.html` and `preview-dark.html` must be standalone HTML files with inline CSS and no external dependencies. At minimum, show color swatches, typography samples, and button states. Add inputs, cards, and spacing visualization when complexity justifies it.
 
-读取 `skills/superui-shared/DESIGN_INTELLIGENCE.md`，生成一段设计情报摘要，并写入 DESIGN.md 正文。
+## Output
 
-必须判定：
+Write:
 
-- Product type
-- Audience
-- Primary job
-- Density
-- Trust level
-- Platform
-- Brand posture
-- Recommended pattern
-- Style rationale
-- Anti-patterns to avoid
+- `<ARTIFACT_ROOT>/DESIGN.md`
+- `<ARTIFACT_ROOT>/preview.html`
+- `<ARTIFACT_ROOT>/preview-dark.html`
+- `<ARTIFACT_ROOT>/todo.md`
+- `<ARTIFACT_ROOT>/progress.md`
+- `<ARTIFACT_ROOT>/pipeline-status.md`
 
-需要设计情报时，按 `DESIGN_INTELLIGENCE.md` 的 "Optional External Intelligence: ui-ux-pro-max-skill" 流程明确检查本地是否安装 `ui-ux-pro-max-skill`：
+## Tools
 
-1. 搜索当前 workspace、`~/.claude/skills/`、`~/.agents/skills/`、`~/.codex/skills/`、`E:/MySkills/` 等常见位置。
-2. 找到 `search.py` 后，运行 `--design-system -f markdown` 查询。
-3. 将返回的 pattern/style/color/typography/anti-patterns 摘要写入 DESIGN.md 的 `Design Intelligence` 段。
-4. 明确记录 Adopted / Rejected / Reason，避免无条件照搬。
-5. 未安装或运行失败时，使用 `DESIGN_INTELLIGENCE.md` 的矩阵手动推导，并在 DESIGN.md 标注 `External inspiration: not available`。
-
-未安装或不可用时不得阻塞任务。继续走 SuperUI 自己的完整流程，并在最终回复或交接说明中建议用户可选安装 `ui-ux-pro-max-skill` 以增强未来的风格、配色、字体、UX、图表和技术栈推荐。
-
-该外部工具只能作为建议来源，不作为 SuperUI 的必需依赖。
-
----
-
-## Step 3：案例参照（按需）
-
-案例库用于风格校准，不是必读上下文。
-
-1. 先用目录名、案例库 README 或 `rg --files examples/design-md` 找候选，不读取整库。
-2. 最多选 1-2 个最接近的案例；只读取与当前决策相关的章节，如 Overview、Colors、Typography、Layout、Components、Responsive。
-3. 用户没有明确品牌、行业、风格要求，或 `DESIGN_INTELLIGENCE.md` 已足够支撑判断时，跳过案例并记录 `case reference skipped`。
-4. 参照案例但不照抄：提取结构和表达方式，不复制数值、文案或品牌资产。
-
-案例风格速查（部分）：
-
-| 风格方向 | 可参考案例 |
-|---------|-----------|
-| 科技/AI | claude, cursor, lovable, replicate |
-| SaaS/工具 | linear.app, notion, figma, vercel |
-| 消费品牌 | apple, nike, spotify, starbucks |
-| 金融 | stripe, coinbase, revolut, wise |
-| 汽车 | bmw, ferrari, lamborghini, tesla |
-| 企业 | ibm, hashicorp, mongodb, sentry |
-
----
-
-## Step 4：生成 DESIGN.md
-
-按照 `templates/DESIGN.md.template.md` 的结构，逐段生成。
-
-### 3.1 YAML 前言层生成规则
-
-**colors**：
-- 从分析报告的"配色方案"中提取或从用户描述中推导
-- 必须覆盖：主色（含 hover/disabled）、功能色四色（success/warning/error/info）、中性色至少 8 阶（从 ink 到 canvas）
-- 色值使用 hex 格式，不得使用 rgb()/hsl()
-- 每个色值标注语义化变量名
-
-**typography**：
-- 至少定义 10 个字号层级：display-xl/lg/md/sm、title-lg/md/sm、body-lg/md/sm、caption
-- 每层含：fontFamily、fontSize（px）、fontWeight（数字）、lineHeight（纯数字比例）、letterSpacing（px）
-- 字体族必须指定 fallback：`"Display Font, system-ui, sans-serif"`
-
-**spacing**：
-- 基准单位 4px，从 xs(4px) 到 3xl(64px) 至少 8 档
-- 如有分析报告中的间距 token，优先沿用
-
-**borderRadius**：none(0) / sm(2px) / md(4px) / lg(8px) / xl(12px) / full(9999px)
-
-**shadows**：至少 sm/md/lg/xl 四档，含完整 box-shadow 值
-
-**breakpoints**：至少 sm/md/lg/xl/2xl 五个断点
-
-### 3.2 Markdown 正文层生成规则
-
-按以下 12 个段落依次撰写，每段至少 3 个要点：
-
-1. **Overview**：一句话核心特征 + 品牌调性 + 设计哲学
-2. **Design Intelligence**：产品类型、受众、密度、信任等级、平台、推荐模式和反模式
-3. **Colors**：主色/功能色/中性色的使用场景和对比度声明
-4. **Typography**：字体选择理由 + 层级视觉逻辑 + 字重分配
-5. **Layout**：栅格 + 分区模式 + 间距系统的使用规则
-6. **Elevation & Depth**：阴影使用场景 + z-index 分层
-7. **Shapes**：圆角体系 + 图标风格
-8. **Components**：按钮、输入框、卡片、导航、弹窗的详细规范（每个组件含变体×状态矩阵）
-9. **Interaction Loop** ⭐：CRUD 完整闭环、加载态策略、错误处理、乐观更新
-10. **Do's and Don'ts**：每个核心组件至少 1 对正反例
-11. **Responsive Behavior**：断点行为、移动端特殊规则
-12. **Agent Prompt Guidelines**：给 AI 的指令（禁止项 `MUST NOT` + 强制项 `SHALL`）
-13. **Design Handoff Checklist**：网格、色板、字体、状态、响应式、组件化、素材、错误页等交付检查
-
----
-
-## Step 5：生成预览 HTML
-
-基于 DESIGN.md 中的 token，生成两个独立的 HTML 文件：
-
-### preview.html（亮色主题）
-
-分两层生成，基础版必须完成，完整版视复杂度可做：
-
-**基础版（MUST）**：
-- 配色色板（所有颜色按组排列，附变量名和 hex 值）
-- 排版示例（display-xl/lg/md/sm + title-lg/md/sm + body + caption 实际渲染）
-- 按钮矩阵（primary/secondary/outline 三个变体，各含 default/hover/disabled 态）
-
-**完整版（SHOULD，基础版完成后追加）**：
-- 输入框状态（default/focus/error/disabled）
-- 卡片示例
-- 间距可视化
-
-技术要求：
-- 纯 HTML+内联 CSS，零外部依赖，可直接在浏览器打开
-- 所有颜色引用 DESIGN.md 中的 CSS 变量
-- 响应式布局，展示断点切换效果
-
-### preview-dark.html（暗色主题）
-同上但使用暗色背景，验证 DESIGN.md 在暗色模式下的表现。
-
----
-
-## Step 6：Lint 校验
-
-执行校验并处理结果：
-
-```bash
-npx @google/design.md lint DESIGN.md
-```
-
-- 工具可用：读取 lint 输出，修正报告的问题后重新 lint 至通过
-- 工具不可用：在 DESIGN.md 末尾标注 `<!-- lint: skipped, @google/design.md CLI not available -->` 并继续
-- 如有 WCAG 对比度违规，优先调整色值而非修改设计意图
-
----
-
-## 产物清单
-
-| 文件 | 位置 | 说明 |
-|------|------|------|
-| DESIGN.md | `<ARTIFACT_ROOT>/DESIGN.md` | 设计规范主文件 |
-| preview.html | `<ARTIFACT_ROOT>/preview.html` | 亮色可视化预览 |
-| preview-dark.html | `<ARTIFACT_ROOT>/preview-dark.html` | 暗色可视化预览 |
-| 结构化清单 | `<ARTIFACT_ROOT>/todo.md`、`progress.md`、`pipeline-status.md` | 跨 agent 交接状态 |
-
-## 工具依赖
-
-- `@google/design.md` CLI：lint/diff/export（首选，不可用时降级为跳过）
-- 案例库：`examples/design-md/`（本 skill 内置，使用相对路径即可）
-- 模板：`templates/DESIGN.md.template.md`（本 skill 内置）
-- 共享规则：`skills/superui-shared/DESIGN_INTELLIGENCE.md`
-- 共享规则：`skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`
-
+- `@google/design.md` CLI when available
+- `examples/design-md/` only as on-demand references
+- `templates/DESIGN.md.template.md`
+- `skills/superui-shared/DESIGN_INTELLIGENCE.md`
+- `skills/superui-shared/DESIGN_HANDOFF_CHECKLIST.md`

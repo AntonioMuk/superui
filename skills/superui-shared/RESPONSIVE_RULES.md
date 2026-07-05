@@ -1,63 +1,46 @@
-﻿# RESPONSIVE_RULES — 响应式布局硬约束
+# RESPONSIVE_RULES - Responsive Layout Constraints
 
-本文档是前端实现的不可协商约束。所有产出代码（HTML/CSS/Vue/React）必须通过以下检查，违反即不合格。
+This file defines non-negotiable constraints for frontend implementation. HTML, CSS, Vue, and React output must pass these checks.
 
----
+## MUST NOT
 
-## 一、禁止项（MUST NOT）
+| # | Rule | Invalid example | Notes |
+|---|------|-----------------|-------|
+| R1 | Do not use `position: absolute` for primary layout containers | `position: absolute; top: 80px; left: 260px;` | Allowed for overlays, indicators, tooltips, and decorative helpers |
+| R2 | Do not use fixed pixel width as container width | `width: 1200px;` | Use `max-width: 1200px; width: 100%;` |
+| R3 | Do not use fixed pixel height to constrain content flow | `height: 600px; overflow: auto;` | Use `min-height` or content-driven height |
+| R4 | Do not use `!important` inside responsive overrides | `@media (...) { width: 100% !important; }` | Fix specificity instead |
+| R5 | Do not put static layout styles inline in HTML | `<div style="width:800px; display:flex">` | Static layout belongs in CSS or style modules |
 
-以下写法一旦出现在代码中，必须重写，不存在例外：
+## SHALL
 
-| # | 规则 | 示例（违规） | 说明 |
-|---|------|-------------|------|
-| R1 | `position: absolute` 不得用于主布局容器 | `position: absolute; top: 80px; left: 260px;` | 用于浮层指示器、tooltip 等辅助元素除外 |
-| R2 | 不得使用固定像素宽度作为容器宽度 | `width: 1200px;` | 必须使用 `max-width: 1200px; width: 100%;` |
-| R3 | 不得使用固定像素高度限制内容流 | `height: 600px; overflow: auto;` | 必须使用 `min-height` 或让高度由内容决定 |
-| R4 | 不得在响应式媒体查询中使用 `!important` | `@media (max-width: 768px) { .container { width: 100% !important; } }` | `!important` 破坏级联，响应式需用优先级而非强制 |
-| R5 | 不得在 HTML 内联样式中写布局属性 | `<div style="width:800px; display:flex">` | 内联样式仅允许动态值（如通过 JS 计算的 transform），静态布局必须在 CSS/样式文件中 |
+| # | Rule | Valid example |
+|---|------|---------------|
+| R6 | Primary layout uses Flexbox or CSS Grid | `display: grid; grid-template-columns: 260px 1fr;` |
+| R7 | Containers use `max-width` plus percentage width | `max-width: 1200px; width: 100%; margin: 0 auto;` |
+| R8 | Font sizes use `clamp()` or `rem` | `font-size: clamp(1rem, 2.5vw, 1.5rem);` |
+| R9 | Spacing uses DESIGN.md spacing tokens | `padding: var(--space-md);` |
+| R10 | Define at least `sm`, `md`, and `lg` breakpoints | `640px`, `768px`, `1024px` |
+| R11 | Images are responsive | `img { max-width: 100%; height: auto; }` |
+| R12 | Mobile touch targets are at least 44x44px | Buttons, links, and controls |
 
----
+## SHOULD
 
-## 二、强制项（SHALL）
-
-以下规则必须满足，不可省略：
-
-| # | 规则 | 示例（合规） |
-|---|------|-------------|
-| R6 | 主布局必须使用 Flexbox 或 CSS Grid | `display: grid; grid-template-columns: 260px 1fr;` |
-| R7 | 容器宽度必须使用 `max-width` + 百分比 | `max-width: 1200px; width: 100%; margin: 0 auto;` |
-| R8 | 字号必须使用 `clamp()` 或 `rem` 单位 | `font-size: clamp(1rem, 2.5vw, 1.5rem);` |
-| R9 | 间距必须使用 DESIGN.md 定义的 spacing token | `padding: var(--space-md);` 或 `p-4`（Tailwind spacing 对应 DESIGN.md） |
-| R10 | 至少定义 sm / md / lg 三个断点 | `@media (max-width: 640px)`, `@media (max-width: 768px)`, `@media (max-width: 1024px)` |
-| R11 | 所有图片必须 `max-width: 100%; height: auto;` | `img { max-width: 100%; height: auto; display: block; }` |
-| R12 | 移动端触控目标最小 44×44px | 按钮、链接、表单项的点击区域 ≥ 44×44px |
-
----
-
-## 三、推荐项（SHOULD）
-
-非强制但强烈建议：
-
-| # | 规则 |
+| # | Rule |
 |---|------|
-| R13 | 使用 CSS 容器查询（`@container`）替代部分媒体查询 |
-| R14 | 移动优先：基础样式为移动端，通过 `min-width` 媒体查询叠加桌面样式 |
-| R15 | 使用 `aspect-ratio` 替代 padding-bottom hack |
-| R16 | 使用 `gap` 属性替代 margin 间距（Flexbox/Grid 中） |
-| R17 | 动画使用 `prefers-reduced-motion` 媒体查询包裹 |
+| R13 | Prefer container queries for component-local responsive behavior |
+| R14 | Use mobile-first styles with `min-width` overrides |
+| R15 | Use `aspect-ratio` instead of padding hacks |
+| R16 | Use `gap` instead of margin spacing in Flexbox/Grid |
+| R17 | Wrap motion with `prefers-reduced-motion` when relevant |
 
----
+## Self-Check
 
-## 四、自检清单
-
-编码完成后，逐项自检：
-
-- [ ] 全局搜索 `position: absolute`，确认无一用于主布局
-- [ ] 全局搜索 `width: [0-9]+px`，确认无一为容器宽度
-- [ ] 全局搜索 `!important`，确认无一在媒体查询中
-- [ ] 全局搜索 `font-size: [0-9]+px`，确认已全部替换为 clamp/rem
-- [ ] 确认间距值均为 DESIGN.md spacing token
-- [ ] 确认定义了至少 3 个断点
-- [ ] 确认所有图片有 max-width:100%
-- [ ] 确认触控目标 ≥ 44×44px
-
+- [ ] Search `position: absolute`; none is used for primary layout.
+- [ ] Search fixed `width: Npx`; none defines container width.
+- [ ] Search `!important`; none is used for responsive overrides.
+- [ ] Search fixed `font-size: Npx`; replace with `clamp()` or `rem` where applicable.
+- [ ] Verify spacing uses DESIGN.md tokens.
+- [ ] Verify at least three breakpoints exist.
+- [ ] Verify images have `max-width: 100%`.
+- [ ] Verify touch targets are at least 44x44px.

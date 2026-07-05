@@ -1,113 +1,114 @@
 ---
 name: superui
-description: "Use when the user explicitly mentions SuperUI, superui, $superui, this skill, 本技能, 调用/使用 SuperUI, or asks to create, redesign, analyze, plan, implement, review, or improve frontend UI, web apps, landing pages, dashboards, React/Vue components, DESIGN.md, design systems, responsive layouts, visual QA, 前端, 页面, 界面, 组件, 仪表盘, 设计规范, 改造, 重构, 审核."
+description: "Use when the user explicitly mentions SuperUI, superui, $superui, this skill, or asks to create, redesign, analyze, plan, implement, review, or improve frontend UI, web apps, landing pages, dashboards, React/Vue components, DESIGN.md, design systems, responsive layouts, visual QA, UI refactors, or frontend audits."
 ---
 
-# SuperUI 总控
+# SuperUI Controller
 
-SuperUI 是前端 UI 工作流的入口调度器。总控只做五件事：确定产物目录、读取偏好、判断阶段、选择子 skill、检查产物。具体的分析、设计、规划、实现和审核都交给对应子 skill。
+SuperUI is the entry-point orchestrator for frontend UI work. The controller only decides artifact paths, reads preferences, detects the current stage, routes to the smallest necessary child skill, and checks completion artifacts. Analysis, design, planning, implementation, and review are delegated to child skills.
 
-## 硬触发
+## Hard Trigger
 
-用户明确提到 `SuperUI`、`superui`、`$superui`、`this skill`、`本技能`、`调用这个技能`、`使用这个技能`、`调用 SuperUI` 或 `使用 SuperUI` 时，必须先加载本 skill。不要因为请求看起来像普通前端任务，就绕过 SuperUI。
+If the user explicitly mentions `SuperUI`, `superui`, `$superui`, `this skill`, or asks to call/use SuperUI, load this skill before doing frontend work.
 
-## 启动顺序
+## Startup Order
 
-1. 读取 `skills/superui-shared/OUTPUT_POLICY.md`，确定统一的 `<ARTIFACT_ROOT>`。
-2. 读取用户级偏好；不可用时，只读取 `skills/superui-shared/USER_PREFERENCES.md` 作为默认模板。
-3. 检查 `<ARTIFACT_ROOT>/` 中已有产物，判断从哪个阶段继续。
-4. 按用户意图路由到最小必要子 skill。
-5. 读取 `skills/superui-shared/TASK_MANAGEMENT.md`，创建或更新 `<ARTIFACT_ROOT>/todo.md`、`progress.md` 和 `pipeline-status.md`。
-6. 子 skill 完成后检查关键产物，并同步结构化清单与 `<ARTIFACT_ROOT>/pipeline-status.md`。
+1. Read `skills/superui-shared/OUTPUT_POLICY.md` and determine `<ARTIFACT_ROOT>`.
+2. Read user-level preferences; if unavailable, read `skills/superui-shared/USER_PREFERENCES.md` only as a template.
+3. Inspect existing artifacts under `<ARTIFACT_ROOT>/` and resume from the right stage.
+4. Route to the smallest necessary child skill.
+5. Read `skills/superui-shared/TASK_MANAGEMENT.md`; create or update `<ARTIFACT_ROOT>/todo.md`, `progress.md`, and `pipeline-status.md`.
+6. After each child skill finishes, check required artifacts and update the structured checklist plus `pipeline-status.md`.
 
-## 按需读取共享文件
+## Load Shared Files On Demand
 
-不要预加载整个 `skills/superui-shared/`。按阶段读取：
+Do not preload the whole `skills/superui-shared/` directory.
 
-| 文件 | 何时读取 |
-|------|----------|
-| `OUTPUT_POLICY.md` | 每次 SuperUI 任务开始 |
-| `TASK_MANAGEMENT.md` | 每次 SuperUI 任务开始、阶段切换、恢复或交付 |
-| `USER_PREFERENCES.md` | 用户级偏好不可用时 |
-| `DESIGN_INTELLIGENCE.md` | 生成 DESIGN.md，或审核风格、行业、信任等级问题 |
-| `DESIGN_HANDOFF_CHECKLIST.md` | 规划、Plan Gate、交付完整性争议 |
-| `ENGINEERING_GATES.md` | 规划、审核、TDD 交接 |
-| `RESPONSIVE_RULES.md` | 实现或 Code Gate 响应式检查 |
-| `rubric-locked.md` | 审核阶段 |
+| File | When to read |
+|------|--------------|
+| `OUTPUT_POLICY.md` | Start of every SuperUI task |
+| `TASK_MANAGEMENT.md` | Start, stage transition, resume, or final handoff |
+| `USER_PREFERENCES.md` | Only when user-level preferences are unavailable |
+| `DESIGN_INTELLIGENCE.md` | Creating DESIGN.md or reviewing style, industry, trust, or anti-patterns |
+| `DESIGN_HANDOFF_CHECKLIST.md` | Planning, Plan Gate, or design handoff completeness disputes |
+| `ENGINEERING_GATES.md` | Planning, review, and TDD handoff |
+| `RESPONSIVE_RULES.md` | Implementation or Code Gate responsive checks |
+| `rubric-locked.md` | Review stage |
 
-`DESIGN_HANDOFF_CHECKLIST.md` 和 `ENGINEERING_GATES.md` 只用于完整性和风险检查，不产生 DESIGN.md 之外的新设计参数。发现设计缺口时，回到 `superui-design-md` 更新 DESIGN.md，或列为待确认。
+`DESIGN_HANDOFF_CHECKLIST.md` and `ENGINEERING_GATES.md` are checks only. They must not invent design parameters outside `DESIGN.md`. If design information is missing, return to `superui-design-md` or mark the gap as pending confirmation.
 
-## 结构化清单
+## Structured Checklist
 
-SuperUI 必须兼容不同 agent 生态的任务结构，而不是依赖某个平台私有的 todo 工具。
+SuperUI must work across agent ecosystems instead of relying on one platform-specific todo tool.
 
-- 便携源文件：`<ARTIFACT_ROOT>/todo.md`、`progress.md`、`pipeline-status.md`。
-- 原生清单同步：如果当前 agent 有 TodoWrite、plan、task list、memory 或 issue 工具，先把同一批任务镜像进去；便携源文件用于跨 agent 恢复。
-- 状态词统一：`pending`、`in_progress`、`blocked`、`done`；默认最多一个 `in_progress`。
-- 进度留痕：在 `progress.md` 记录可审计的任务状态、证据、必要取舍和阻塞，不记录或输出私有逐字推理过程。
-- 完成条件：没有更新 checkbox、`progress.md` 和必要验证证据时，不声明阶段或任务完成。
+- Portable files: `<ARTIFACT_ROOT>/todo.md`, `progress.md`, `pipeline-status.md`.
+- Native sync: if the current agent has TodoWrite, plan, task list, memory, or issue tools, mirror the same tasks there first. The portable files remain the cross-agent recovery source.
+- Status words: `pending`, `in_progress`, `blocked`, `done`; keep at most one `in_progress` unless explicit parallel subagents are available.
+- Progress ledger: record auditable task status, evidence, necessary tradeoffs, and blockers in `progress.md`. Do not record or expose private chain-of-thought.
+- Completion rule: do not claim a stage or task is complete until the checkbox, `progress.md`, and required validation evidence are updated.
 
-## 路由
+## Routing
 
-| 用户意图 | 路由 |
-|----------|------|
-| 分析现有前端项目、提取设计系统 | `superui-source-analyzer` |
-| 生成或更新 DESIGN.md / design tokens / 设计规范 | `superui-design-md` |
-| 输出方案、规格、测试计划 | `superui-planner` |
-| 实现前端、按方案落地、TDD | `superui-tdd` |
-| 审核、QA、Plan Gate、Code Gate | `superui-review` |
-| 新建完整 UI 项目 | `superui-design-md` -> `superui-planner` -> `superui-review`(Plan Gate) -> `superui-tdd` -> `superui-review`(Code Gate) |
-| 改造存量 UI 项目 | `superui-source-analyzer` -> `superui-design-md` -> `superui-planner` -> `superui-review`(Plan Gate) -> `superui-tdd` -> `superui-review`(Code Gate) |
+| User intent | Route |
+|-------------|-------|
+| Analyze an existing frontend project or extract a design system | `superui-source-analyzer` |
+| Generate or update DESIGN.md, design tokens, or style guide | `superui-design-md` |
+| Produce proposal, specs, or test plan | `superui-planner` |
+| Implement frontend code with TDD | `superui-tdd` |
+| Review, QA, Plan Gate, or Code Gate | `superui-review` |
+| New complete UI project | `superui-design-md` -> `superui-planner` -> `superui-review` (Plan Gate) -> `superui-tdd` -> `superui-review` (Code Gate) |
+| Existing UI refactor | `superui-source-analyzer` -> `superui-design-md` -> `superui-planner` -> `superui-review` (Plan Gate) -> `superui-tdd` -> `superui-review` (Code Gate) |
 
-用户明确要求跳过某个阶段时，按目标阶段执行。缺失的前置产物只有在确实阻塞时再补。
+If the user explicitly asks to skip a stage, execute the target stage. Backfill missing prerequisites only when truly blocking.
 
-## 阶段恢复
+## Stage Recovery
 
-用文件存在性判断进度：
+Use artifact existence to infer progress:
 
-| 产物 | 阶段 |
-|------|------|
-| `analysis/layout.md`、`analysis/interaction.md`、`analysis/style.md` | 源码分析完成 |
-| `DESIGN.md`、`preview.html`、`preview-dark.html` | 设计规范完成 |
-| `determination-report.md`、`proposal.md` 或 `design-proposal.md`、`test-plan.md` | 规划完成 |
-| `design-adjustments.md` 或代码 diff | 实现完成 |
-| `review/improvement-plan.md` | 审核完成或待返工 |
+| Artifact | Stage |
+|----------|-------|
+| `analysis/layout.md`, `analysis/interaction.md`, `analysis/style.md` | Source analysis complete |
+| `DESIGN.md`, `preview.html`, `preview-dark.html` | Design spec complete |
+| `determination-report.md`, `proposal.md` or `design-proposal.md`, `test-plan.md` | Planning complete |
+| `design-adjustments.md` or code diff | Implementation complete |
+| `review/improvement-plan.md` | Review complete or rework pending |
 
-检测到已有产物时，简短说明“检测到 XX，继续 YY 阶段”。
+When resuming, briefly state: `Detected <artifact>; continuing with <stage>`.
 
-## 偏好记忆
+## Preference Memory
 
-- 只记录用户明确表达的长期 UI 偏好，例如“以后都优先 Element Plus”“我不喜欢大圆角”。
-- 不记录一次性需求，例如“这次用红色”“这个页面先不要暗色模式”。
-- 优先写入 `~/.superui/USER_PREFERENCES.md`；平台目录可用时，也可写入 `~/.codex/superui/USER_PREFERENCES.md`、`~/.claude/superui/USER_PREFERENCES.md`。
-- 用户级位置不可写时，写入 `<target_project>/.superui/preferences.local.md`；不得写回仓库内共享模板。
+- Record only stable long-term UI preferences explicitly stated by the user.
+- Do not record one-off task requirements.
+- Prefer `~/.superui/USER_PREFERENCES.md`; platform-specific paths such as `~/.codex/superui/USER_PREFERENCES.md` or `~/.claude/superui/USER_PREFERENCES.md` are acceptable.
+- If user-level paths are not writable, write `<target_project>/.superui/preferences.local.md`.
+- Never write personal preferences back into the shared template in this repository.
 
-## 产物根目录
+## Artifact Root
 
-路径策略以 `OUTPUT_POLICY.md` 为准。一般顺序：
+Use `OUTPUT_POLICY.md` as the source of truth. Usual order:
 
-1. 用户显式指定的目录。
-2. 目标项目存在时：`<target_project>/.superui/<project>/`。
-3. 无目标项目时：`<current_workspace>/outputs/<project>/`。
+1. User-specified directory.
+2. `<target_project>/.superui/<project>/` when a target project exists.
+3. `<current_workspace>/outputs/<project>/` when no target project is known.
 
-每个阶段开头报告当前 `<ARTIFACT_ROOT>`。
+Report the current `<ARTIFACT_ROOT>` at the start of each major stage.
 
-## Gate
+## Gates
 
-- **Plan Gate**：`proposal.md` 或 `design-proposal.md` 产出后，触发 `superui-review`。
-- **Code Gate**：代码和测试产出后，触发 `superui-review`。
+- **Plan Gate**: trigger `superui-review` after `proposal.md` or `design-proposal.md` is produced.
+- **Code Gate**: trigger `superui-review` after code and tests are produced.
 
-Gate 未通过时，根据 `review/improvement-plan.md` 回到规划或实现阶段；核心冲突写入 `review/review-conflicts.json`，等待人类决策。
+If a gate fails, use `review/improvement-plan.md` to return to planning or implementation. Core conflicts go to `review/review-conflicts.json` for human decision.
 
-## 异常处理
+## Failure Handling
 
-| 情况 | 处理 |
-|------|------|
-| 子 skill 失败 | 报告原因，给出重试、降级或暂停选项 |
-| 前置产物缺失 | 路由到生成该产物的子 skill |
-| 用户改变方向 | 重新确定意图、`<ARTIFACT_ROOT>` 和路由 |
-| 用户级偏好不可写 | 写入项目本地私有偏好文件 |
+| Situation | Handling |
+|-----------|----------|
+| Child skill fails | Report cause and offer retry, fallback, or pause |
+| Missing prerequisite artifact | Route to the child skill that creates it |
+| User changes direction | Re-evaluate intent, `<ARTIFACT_ROOT>`, and route |
+| User-level preference path is not writable | Write project-local private preferences |
 
-## 工具
+## Tools
 
-优先使用 `rg`、`rg --files`、目录列表和当前环境的 skill 加载机制。复杂链路维护 `<ARTIFACT_ROOT>/pipeline-status.md`。
+Prefer `rg`, `rg --files`, directory listings, and the current runtime skill-loading mechanism. Maintain `<ARTIFACT_ROOT>/pipeline-status.md` for complex workflows.

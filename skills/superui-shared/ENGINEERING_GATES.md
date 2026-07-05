@@ -1,37 +1,35 @@
 # SuperUI Engineering Gates
 
-Use this checklist in planning, implementation, and review. It adapts the local `ai-coding-principles` skill to frontend UI work.
+Use these gates to keep UI work evidence-based, scoped, testable, reusable, and compatible. They check engineering discipline only; they do not create new design parameters outside `DESIGN.md`.
 
-## Eight Gates
+## Gates
 
-| Gate | SuperUI Meaning | Required Evidence |
-|------|-----------------|-------------------|
-| Evidence first | Do not guess why a UI is broken or why a design direction fits. Trace source, user need, DESIGN.md, screenshots, tests, or browser evidence. | Linked files, screenshots, analysis notes, test output, or explicit user wording |
-| Minimum scope | Change the smallest page/component/token surface that satisfies the request. | Impact area, affected routes/components, regression scope |
-| Surgical edits | Preserve unrelated user changes and existing conventions. Keep a rollback path. | Clean diff review and rollback note for risky edits |
-| Test driven | Specs and tests define expected UI behavior before or alongside implementation. | `specs/*.md`, `test-plan.md`, unit/e2e/visual/a11y checks |
-| Useful comments | Add comments only for non-obvious design/compatibility decisions. | Why/boundary comments, not what-the-code-does comments |
-| Occam | Prefer the simplest native/project pattern before new abstractions or dependencies. | Reuse decision and rejected alternatives |
-| Reuse first | Search existing components, tokens, styles, routes, utilities, and libraries before inventing new ones. | Search notes and reused assets |
-| Best compatibility | Confirm browser/runtime/theme/platform support and graceful fallback. | Target matrix, fallback behavior, light/dark and responsive checks |
+| Gate | Requirement | Evidence |
+|------|-------------|----------|
+| Evidence first | Claims are backed by source files, DESIGN.md, tests, or user instructions | File paths, line refs, screenshots, test output |
+| Minimal scope | Changes stay within the requested UI surface | Changed-file list and excluded areas |
+| Surgical edits | Do not rewrite unrelated code or design systems | Diff review |
+| Test driven | Behavior and visual contracts are tested before claiming completion | RED/GREEN evidence or documented fallback |
+| Useful comments | Comments explain non-obvious constraints only | Code review |
+| Simplicity | Prefer the simplest implementation that satisfies specs | Plan notes |
+| Reuse first | Prefer existing components, tokens, utilities, and libraries | Reuse notes |
+| Compatibility | Preserve framework, routing, styling, accessibility, and responsive expectations | Build/test/manual checks |
 
-## Required Checklist for Plans
+## Required Checklist
 
-Every `proposal.md`, `design-proposal.md`, and `test-plan.md` must include:
+Add this checklist to plans, test plans, and reviews:
 
 ```markdown
 ## SuperUI Engineering Gates
 
-| Gate | Status | Evidence |
-|------|--------|----------|
-| Evidence first | ✅/❌ | |
-| Minimum scope | ✅/❌ | |
-| Surgical edits | ✅/❌ | |
-| Test driven | ✅/❌ | |
-| Useful comments | ✅/❌ | |
-| Occam | ✅/❌ | |
-| Reuse first | ✅/❌ | |
-| Best compatibility | ✅/❌ | |
+- [ ] Evidence first: [evidence]
+- [ ] Minimal scope: [scope]
+- [ ] Surgical edits: [diff boundary]
+- [ ] Test driven: [test evidence]
+- [ ] Useful comments: [yes/no]
+- [ ] Simplicity: [chosen approach]
+- [ ] Reuse first: [reused assets/components]
+- [ ] Compatibility: [framework/responsive/a11y checks]
 ```
 
-No code gate should pass while any row is `❌` unless the exception is explicitly approved by the user and recorded in `review/improvement-plan.md`.
+If any item fails, mark it as a blocker or record a justified exception in `progress.md` and the relevant stage artifact.

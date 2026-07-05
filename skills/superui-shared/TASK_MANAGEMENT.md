@@ -1,29 +1,29 @@
-# 结构化清单
+# Structured Checklist
 
-当 SuperUI 需要跨 agent 跟踪任务、恢复进度或交接执行时读取本文件。
+Read this file when SuperUI needs cross-agent task tracking, progress recovery, or handoff.
 
-## 原则
+## Principle
 
-参考 Superpowers 的做法：运行时使用 agent 原生 todo，耐久状态写入文件。不要记录私有逐字推理过程，只记录任务、证据、阻塞、验证结果和必要取舍。
+Follow the Superpowers-style model: use the agent native todo tool at runtime, and write durable state to files. Do not record private chain-of-thought. Record only tasks, evidence, blockers, validation results, and necessary tradeoffs.
 
-## 统一文件
+## Standard Files
 
-| 文件 | 用途 | 必要性 |
-|------|------|--------|
-| `<ARTIFACT_ROOT>/todo.md` | 便携 checkbox 任务清单 | 必需 |
-| `<ARTIFACT_ROOT>/progress.md` | 可恢复进度账本 | 必需 |
-| `<ARTIFACT_ROOT>/pipeline-status.md` | 当前阶段和下一步 | 必需 |
+| File | Purpose | Required |
+|------|---------|----------|
+| `<ARTIFACT_ROOT>/todo.md` | Portable checkbox task list | Yes |
+| `<ARTIFACT_ROOT>/progress.md` | Durable recovery ledger | Yes |
+| `<ARTIFACT_ROOT>/pipeline-status.md` | Current stage and next action | Yes |
 
-不要默认创建额外管理文件。重大设计或工程取舍写入 `progress.md` 的短条目；只有用户或项目流程明确要求时，才额外创建专门决策文档。
+Do not create extra management files by default. Put major design or engineering tradeoffs into short `progress.md` entries. Create dedicated decision documents only when the user or project process explicitly asks for them.
 
 ## todo.md
 
-使用 Markdown checkbox，方便 Codex、Claude、Cursor、Cline、OpenCode、Gemini、Windsurf 和普通编辑器读取。
+Use Markdown checkboxes so Codex, Claude, Cursor, Cline, OpenCode, Gemini, Windsurf, and plain editors can read them.
 
 ```markdown
 # SuperUI Todo
 
-> REQUIRED: mirror these items into the current agent's native todo/task tool when available.
+> REQUIRED: mirror these items into the current agent native todo/task tool when available.
 
 - [ ] Determine artifact root
 - [ ] Load preferences
@@ -35,14 +35,14 @@
 - [ ] Final delivery
 ```
 
-规则：
-- 每个任务应能独立产生可检查产物。
-- 当前任务在原生 todo 中标为 `in_progress`；文件里用 checkbox 记录完成状态。
-- 任务阻塞时不要勾选，在 `progress.md` 记录阻塞原因和需要的输入。
+Rules:
+- Each task should produce a checkable artifact.
+- Mark the active task `in_progress` in the native todo tool; use checkboxes for durable completion state.
+- If a task is blocked, do not check it off. Record the blocker and needed input in `progress.md`.
 
 ## progress.md
 
-`progress.md` 是压缩上下文后恢复工作的账本，优先相信它和 git 记录。
+`progress.md` is the recovery ledger after context compaction. Prefer it and git history over conversation memory.
 
 ```markdown
 # SuperUI Progress
@@ -56,11 +56,11 @@
 - Next: [next task]
 ```
 
-每个阶段完成时追加一条，不重写历史。条目要短，能让下一个 agent 知道“做到哪、证据在哪、下一步是什么”即可。
+Append one short entry when each stage completes. Do not rewrite history. The next agent only needs to know where the work stands, where evidence lives, and what to do next.
 
 ## pipeline-status.md
 
-只记录当前阶段，不重复 `progress.md`：
+Record only the current stage; do not duplicate `progress.md`.
 
 ```markdown
 # SuperUI Pipeline Status
@@ -72,9 +72,9 @@
 - Blocked: yes/no
 ```
 
-## 交接规则
+## Handoff Rules
 
-- 进入 SuperUI、阶段切换、恢复任务或最终交付时读取本文件。
-- 优先把 `todo.md` 镜像到当前 agent 的原生清单工具；没有原生工具时直接维护 `todo.md`。
-- 子 skill 完成后，勾选对应 todo，追加 `progress.md`，再更新 `pipeline-status.md`。
-- 不要把整份历史粘进新 agent 上下文；交接时只给当前任务、相关产物路径和 `progress.md` 最新条目。
+- Read this file when entering SuperUI, switching stages, resuming work, or delivering final output.
+- Mirror `todo.md` into the current agent native task tool first. If no native tool exists, maintain `todo.md` directly.
+- After a child skill finishes, check off the matching todo item, append `progress.md`, then update `pipeline-status.md`.
+- Do not paste the whole history into the next agent context. Handoff only the current task, relevant artifact paths, and the latest `progress.md` entry.
